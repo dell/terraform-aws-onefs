@@ -44,7 +44,8 @@ resource "random_id" "root_salt" {
 
 data "external" "root_passphrase" {
   program = ["python",
-    "${path.module}/../../terraform_aws_onefs/provisioner_scripts/passphrase.py",
+    "-m",
+    "onefs_workflows.passphrase",
     "--salt",
     "${random_id.root_salt.hex}",
     "--password",
@@ -53,7 +54,8 @@ data "external" "root_passphrase" {
 
 data "external" "admin_passphrase" {
   program = ["python",
-    "${path.module}/../../terraform_aws_onefs/provisioner_scripts/passphrase.py",
+    "-m",
+    "onefs_workflows.passphrase",
     "--salt",
     "${random_id.admin_salt.hex}",
     "--password",
