@@ -328,6 +328,23 @@ resource "aws_placement_group" "onefs_placement_group" {
 
 }
 
+module "machineid" {
+  source = "../machineid"
+  count = local.nodes
+
+  index = count.index
+  cluster_config = local.cluster_config
+  devices = local.devices
+  node_configs = local.node_configs
+  internal_network_config = local.internal_network_config
+  external_network_config = local.external_network_config
+  mgmt_network_config = local.mgmt_network_config
+  external_ips = aws_network_interface.external_interface[*].private_ip
+  mgmt_ips = aws_network_interface.mgmt_interface[*].private_ip
+  enable_mgmt = local.enable_mgmt
+}
+
+
 resource "aws_instance" "onefs_node" {
   count                = local.nodes
   ami                  = local.cluster_config.image_id
@@ -336,19 +353,7 @@ resource "aws_instance" "onefs_node" {
   availability_zone    = local.cluster_config.availability_zone
   placement_group      = aws_placement_group.onefs_placement_group.id
 
-  user_data = jsonencode(jsondecode(
-    templatefile("${path.module}/machineid.template.json", {
-      cluster_config          = local.cluster_config
-      devices                 = local.devices
-      node_config             = local.node_configs[count.index]
-      node_number             = count.index
-      internal_network_config = local.internal_network_config
-      external_network_config = local.external_network_config
-      mgmt_network_config     = local.mgmt_network_config
-      external_ip             = aws_network_interface.external_interface[count.index].private_ip
-      mgmt_ip                 = local.enable_mgmt ? aws_network_interface.mgmt_interface[count.index].private_ip : null
-    })
-  ))
+  user_data = module.machineid[count.index].machineid
 
   metadata_options {
     http_tokens   = local.http_tokens
