@@ -1,26 +1,152 @@
-variable index {}
-variable cluster_config {}
-variable devices {}
-variable node_configs {}
-variable internal_network_config {}
-variable external_network_config {}
-variable mgmt_network_config {}
-variable external_ips {}
-variable mgmt_ips {}
-variable enable_mgmt {}
+variable "node_number" {
+  type = number
+  description = "Zero indexed node number."
+}
+
+variable "name" {
+  type = string
+  description = "Name of cluster."
+}
+
+variable "timezone" {
+  type = string
+  description = "Timezone."
+}
+
+variable "serial_numbers" {
+  type = list(string)
+  description = "List of node serial numbers in order starting with node 0."
+}
+
+variable "enable_mgmt" {
+  type = bool
+  description = "True to eneable the management interfaces."
+  default = false
+}
+
+variable "data_disk_type" {
+  type = string
+  description = "Disk type of data volumes."
+}
+
+variable "internal_ips" {
+  type = list(string)
+  description = "List of internal interface IPs in order starting with node 0."
+}
+
+variable "external_ips" {
+  type = list(string)
+  description = "List of external interface IPs in order starting with node 0."
+}
+
+variable "mgmt_ips" {
+  type = list(string)
+  description = "List of management interface IPs in order starting with node 0 or null if not configured."
+  default = null
+}
+
+variable "internal_network_mask" {
+  type = string
+  description = "Network mask for internal subnet in dotted-quad notation."
+}
+
+variable "external_network_mask" {
+  type = string
+  description = "Network mask for external subnet in dotted-quad notation."
+}
+
+variable "mgmt_network_mask" {
+  type = string
+  description = "Network mask for management subnet in dotted-quad notation or null if not configured."
+  default = null
+}
+
+variable "external_gateway_ip" {
+  type = string
+  description = "Default gateway IP for external subnet."
+}
+
+variable "mgmt_gateway_ip" {
+  type = string
+  description = "Default gateway IP for management subnet or null if not configured."
+  default = null
+}
+
+variable "dns_servers" {
+  type = list(string)
+  description = "List of DNS servers."
+}
+
+variable "dns_domains" {
+  type = list(string)
+  description = "List of DNS search domains."
+}
+
+variable "credentials_hashed" {
+  type = bool
+  description = "If true, hashed passowrd variables are used instead of plaintext."
+}
+
+variable "hashed_root_password" {
+  type = string
+  description = "The hashed root password."
+  default = null
+}
+
+variable "hashed_admin_password" {
+  type = string
+  description = "The hashed admin password."
+  default = null
+}
+
+variable "root_password" {
+  type = string
+  description = "Plaintext root password."
+  default = null
+}
+
+variable "admin_password" {
+  type = string
+  description = "Plaintext admin password."
+  default = null
+}
+
 
 locals {
+  devices = var.enable_mgmt ? [for index in range(length(var.serial_numbers)) : {
+    "serial_number" : var.serial_numbers[index]
+    "int-a" : var.internal_ips[index]
+    "ext-1" : var.external_ips[index]
+    "mgmt-1" : var.mgmt_ips[index]
+    }] : [for index in range(length(var.serial_numbers)) : {
+    "serial_number" : var.serial_numbers[index]
+    "int-a" : var.internal_ips[index]
+    "ext-1" : var.external_ips[index]
+  }]
     machineid = jsonencode(jsondecode(
     templatefile("${path.module}/machineid.template.json", {
-      cluster_config          = var.cluster_config
-      devices                 = var.devices
-      node_config             = var.node_configs[var.index]
-      node_number             = var.index
-      internal_network_config = var.internal_network_config
-      external_network_config = var.external_network_config
-      mgmt_network_config     = var.mgmt_network_config
-      external_ip             = var.external_ips[var.index]
-      mgmt_ip                 = var.enable_mgmt ? var.mgmt_ips[var.index] : null
+      node_number = var.node_number
+      name = var.name
+      timezone = var.timezone
+      serial_numbers = var.serial_numbers
+      data_disk_type = var.data_disk_type
+      devices = local.devices
+      enable_mgmt = var.enable_mgmt
+      internal_ips = var.internal_ips
+      external_ips = var.external_ips
+      mgmt_ips = var.mgmt_ips
+      internal_network_mask = var.internal_network_mask
+      external_network_mask = var.external_network_mask
+      mgmt_network_mask = var.mgmt_network_mask
+      external_gateway_ip = var.external_gateway_ip
+      mgmt_gateway_ip = var.mgmt_gateway_ip
+      dns_servers = var.dns_servers
+      dns_domains = var.dns_domains
+      credentials_hashed = var.credentials_hashed
+      hashed_root_password = var.hashed_root_password
+      hashed_admin_password = var.hashed_admin_password
+      root_password = var.root_password
+      admin_password = var.admin_password
     })
   ))
 }
