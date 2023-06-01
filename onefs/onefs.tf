@@ -319,9 +319,7 @@ resource "aws_placement_group" "onefs_placement_group" {
 
 module "machineid" {
   source = "../machineid"
-  count = local.nodes
-
-  node_number = count.index
+  nodes = local.nodes
   name = var.name
   timezone = local.cluster_config.timezone
   serial_numbers = [for index in range(local.nodes): local.node_configs[index].serial_number]
@@ -353,7 +351,7 @@ resource "aws_instance" "onefs_node" {
   availability_zone    = local.cluster_config.availability_zone
   placement_group      = aws_placement_group.onefs_placement_group.id
 
-  user_data = module.machineid[count.index].machineid
+  user_data = module.machineid.machineid[count.index]
 
   metadata_options {
     http_tokens   = local.http_tokens

@@ -1,6 +1,6 @@
-variable "node_number" {
+variable "nodes" {
   type = number
-  description = "Zero indexed node number."
+  description = "Number of nodes."
 }
 
 variable "name" {
@@ -113,7 +113,7 @@ variable "admin_password" {
 
 
 locals {
-  devices = var.enable_mgmt ? [for index in range(length(var.serial_numbers)) : {
+  devices = var.enable_mgmt ? [for index in range(var.nodes) : {
     "serial_number" : var.serial_numbers[index]
     "int-a" : var.internal_ips[index]
     "ext-1" : var.external_ips[index]
@@ -123,9 +123,9 @@ locals {
     "int-a" : var.internal_ips[index]
     "ext-1" : var.external_ips[index]
   }]
-    machineid = jsonencode(jsondecode(
+    machineid = [for node_number in range(var.nodes) : jsonencode(jsondecode(
     templatefile("${path.module}/machineid.template.json", {
-      node_number = var.node_number
+      node_number = node_number
       name = var.name
       timezone = var.timezone
       serial_numbers = var.serial_numbers
@@ -148,7 +148,7 @@ locals {
       root_password = var.root_password
       admin_password = var.admin_password
     })
-  ))
+  ))]
 }
 
 output "machineid" {
