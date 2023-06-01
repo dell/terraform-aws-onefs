@@ -318,28 +318,28 @@ resource "aws_placement_group" "onefs_placement_group" {
 }
 
 module "machineid" {
-  source = "../machineid"
-  nodes = local.nodes
-  name = var.name
-  timezone = local.cluster_config.timezone
-  serial_numbers = [for index in range(local.nodes): local.node_configs[index].serial_number]
-  enable_mgmt = local.enable_mgmt
-  data_disk_type = local.data_disk_type
-  internal_ips = aws_network_interface.internal_interface[*].private_ip
-  external_ips = aws_network_interface.external_interface[*].private_ip
-  mgmt_ips = try(aws_network_interface.mgmt_interface[*].private_ip, null)
+  source                = "../machineid"
+  nodes                 = local.nodes
+  name                  = var.name
+  timezone              = local.cluster_config.timezone
+  serial_numbers        = [for index in range(local.nodes) : local.node_configs[index].serial_number]
+  enable_mgmt           = local.enable_mgmt
+  data_disk_type        = local.data_disk_type
+  internal_ips          = aws_network_interface.internal_interface[*].private_ip
+  external_ips          = aws_network_interface.external_interface[*].private_ip
+  mgmt_ips              = try(aws_network_interface.mgmt_interface[*].private_ip, null)
   internal_network_mask = local.internal_network_config.network_mask
   external_network_mask = local.external_network_config.network_mask
-  external_gateway_ip = local.external_network_config.gateway_ip
-  mgmt_network_mask = try(local.mgmt_network_config.network_mask, null)
-  mgmt_gateway_ip = try(local.mgmt_network_config.gateway_ip, null)
-  dns_servers = local.external_network_config.dns_servers
-  dns_domains = local.external_network_config.dns_domains
-  credentials_hashed = var.credentials_hashed
-  hashed_root_password = local.cluster_config.hashed_root_password
+  external_gateway_ip   = local.external_network_config.gateway_ip
+  mgmt_network_mask     = try(local.mgmt_network_config.network_mask, null)
+  mgmt_gateway_ip       = try(local.mgmt_network_config.gateway_ip, null)
+  dns_servers           = local.external_network_config.dns_servers
+  dns_domains           = local.external_network_config.dns_domains
+  credentials_hashed    = var.credentials_hashed
+  hashed_root_password  = local.cluster_config.hashed_root_password
   hashed_admin_password = local.cluster_config.hashed_admin_password
-  root_password = var.root_password
-  admin_password = var.admin_password
+  root_password         = var.root_password
+  admin_password        = var.admin_password
 }
 
 
