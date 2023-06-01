@@ -20,7 +20,7 @@ variable "serial_numbers" {
 
 variable "enable_mgmt" {
   type = bool
-  description = "True to eneable the management interfaces."
+  description = "True to enable the management interfaces."
   default = false
 }
 
@@ -84,7 +84,7 @@ variable "dns_domains" {
 
 variable "credentials_hashed" {
   type = bool
-  description = "If true, hashed passowrd variables are used instead of plaintext."
+  description = "If true, hashed password variables are used instead of plaintext."
 }
 
 variable "hashed_root_password" {
@@ -124,7 +124,7 @@ locals {
     "ext-1" : var.external_ips[index]
   }]
     machineid = [for node_number in range(var.nodes) : jsonencode(jsondecode(
-    templatefile("${path.module}/machineid.template.json", {
+    templatefile("${path.module}/machineid.tftemplate.json", {
       node_number = node_number
       name = var.name
       timezone = var.timezone
