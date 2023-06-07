@@ -207,7 +207,6 @@ locals {
     data_disk_iops        = var.data_disk_iops
     data_disk_throughput  = var.data_disk_throughput
     validate_volume_type  = local.validate_volume_type
-    acs_version           = try(data.aws_ami.onefs_ami.tags.acs_version, "2")
   }
   node_configs = {
     for node_number in range(local.nodes) : node_number => {
@@ -220,16 +219,6 @@ locals {
       mgmt_ips : local.enable_mgmt ? [aws_network_interface.mgmt_interface[node_number].private_ip] : null
     }
   }
-  devices = local.enable_mgmt ? [for node_number, node_config in local.node_configs : {
-    "serial_number" : node_config.serial_number
-    "int-a" : node_config.internal_ips[0]
-    "ext-1" : node_config.external_ips[0]
-    "mgmt-1" : node_config.mgmt_ips[0]
-    }] : [for node_number, node_config in local.node_configs : {
-    "serial_number" : node_config.serial_number
-    "int-a" : node_config.internal_ips[0]
-    "ext-1" : node_config.external_ips[0]
-  }]
   http_tokens = var.http_tokens == null ? "required" : var.http_tokens
 }
 
@@ -328,6 +317,32 @@ resource "aws_placement_group" "onefs_placement_group" {
 
 }
 
+module "machineid" {
+  source                = "../machineid"
+  nodes                 = local.nodes
+  name                  = var.name
+  timezone              = local.cluster_config.timezone
+  serial_numbers        = [for index in range(local.nodes) : local.node_configs[index].serial_number]
+  enable_mgmt           = local.enable_mgmt
+  data_disk_type        = local.data_disk_type
+  internal_ips          = aws_network_interface.internal_interface[*].private_ip
+  external_ips          = aws_network_interface.external_interface[*].private_ip
+  mgmt_ips              = try(aws_network_interface.mgmt_interface[*].private_ip, null)
+  internal_network_mask = local.internal_network_config.network_mask
+  external_network_mask = local.external_network_config.network_mask
+  external_gateway_ip   = local.external_network_config.gateway_ip
+  mgmt_network_mask     = try(local.mgmt_network_config.network_mask, null)
+  mgmt_gateway_ip       = try(local.mgmt_network_config.gateway_ip, null)
+  dns_servers           = local.external_network_config.dns_servers
+  dns_domains           = local.external_network_config.dns_domains
+  credentials_hashed    = var.credentials_hashed
+  hashed_root_password  = local.cluster_config.hashed_root_password
+  hashed_admin_password = local.cluster_config.hashed_admin_password
+  root_password         = var.root_password
+  admin_password        = var.admin_password
+}
+
+
 resource "aws_instance" "onefs_node" {
   count                = local.nodes
   ami                  = local.cluster_config.image_id
@@ -336,19 +351,7 @@ resource "aws_instance" "onefs_node" {
   availability_zone    = local.cluster_config.availability_zone
   placement_group      = aws_placement_group.onefs_placement_group.id
 
-  user_data = jsonencode(jsondecode(
-    templatefile("${path.module}/machineid.template.json", {
-      cluster_config          = local.cluster_config
-      devices                 = local.devices
-      node_config             = local.node_configs[count.index]
-      node_number             = count.index
-      internal_network_config = local.internal_network_config
-      external_network_config = local.external_network_config
-      mgmt_network_config     = local.mgmt_network_config
-      external_ip             = aws_network_interface.external_interface[count.index].private_ip
-      mgmt_ip                 = local.enable_mgmt ? aws_network_interface.mgmt_interface[count.index].private_ip : null
-    })
-  ))
+  user_data = module.machineid.machineid[count.index]
 
   metadata_options {
     http_tokens   = local.http_tokens
