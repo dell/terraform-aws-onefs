@@ -86,36 +86,10 @@ locals {
 #
 #  INTERNAL Networking Inteface Security Group & Rules
 #
-resource "aws_security_group" "internal" {
-  name   = "${var.id}-sg-internal-iface"
-  vpc_id = data.aws_vpc.main.id
-
-  tags = merge(
-    local.resource_tags,
-    {
-      Name = "${var.id}-sg-ingress"
-    }
-  )
+variable "internal_sg_id" {
+  description = "Security group ID to be attached with the cluster"
 }
 
-# only allow inbound allow traffic originating from this security group
-resource "aws_security_group_rule" "internal_ingress" {
-  type              = "ingress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  self              = true
-  security_group_id = aws_security_group.internal.id
-}
-
-resource "aws_security_group_rule" "internal_egress" {
-  type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  self              = true
-  security_group_id = aws_security_group.internal.id
-}
 
 locals {
   nodes                           = var.nodes == null ? 3 : var.nodes
@@ -163,7 +137,7 @@ locals {
     network_mask    = cidrnetmask(data.aws_subnet.internal_subnet.cidr_block)
     low_ip          = cidrhost(data.aws_subnet.internal_subnet.cidr_block, var.first_internal_node_hostnum)
     high_ip         = cidrhost(data.aws_subnet.internal_subnet.cidr_block, var.first_internal_node_hostnum + local.nodes - 1)
-    security_groups = [aws_security_group.internal.id]
+    security_groups = [var.internal_sg_id]
     subnet          = data.aws_subnet.internal_subnet.id
   }
   mgmt_network_config = try(
@@ -226,7 +200,7 @@ resource "aws_network_interface" "internal_interface" {
   count           = local.nodes
   subnet_id       = data.aws_subnet.internal_subnet.id
   private_ips     = [cidrhost(data.aws_subnet.internal_subnet.cidr_block, count.index + var.first_internal_node_hostnum)]
-  security_groups = [aws_security_group.internal.id]
+  security_groups = [var.internal_sg_id]
 
   tags = merge(
     local.resource_tags,
@@ -318,7 +292,7 @@ resource "aws_placement_group" "onefs_placement_group" {
 }
 
 module "machineid" {
-  source                = "../machineid"
+  source                = "./modules/machineid"
   nodes                 = local.nodes
   name                  = var.name
   timezone              = local.cluster_config.timezone
