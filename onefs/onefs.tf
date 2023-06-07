@@ -479,6 +479,11 @@ output "node_configs" {
   value = local.node_configs
 }
 
+output "gateway_hostnum" {
+  value = var.gateway_hostnum
+}
+
 output "region" {
   value = var.region
 }
+
