@@ -11,11 +11,7 @@ variable "name" {
 variable "timezone" {
   type        = string
   description = "Timezone."
-}
-
-variable "serial_numbers" {
-  type        = list(string)
-  description = "List of node serial numbers in order starting with node 0."
+  default     = null
 }
 
 variable "enable_mgmt" {
@@ -113,13 +109,15 @@ variable "admin_password" {
 
 
 locals {
+  serial_numbers = [for node_number in range(var.nodes) : "SV200-930073-${format("%04d", node_number)}"]
+  timezone       = var.timezone == null ? "Greenwich Mean Time" : var.timezone
   devices = var.enable_mgmt ? [for index in range(var.nodes) : {
-    "serial_number" : var.serial_numbers[index]
+    "serial_number" : local.serial_numbers[index]
     "int-a" : var.internal_ips[index]
     "ext-1" : var.external_ips[index]
     "mgmt-1" : var.mgmt_ips[index]
-    }] : [for index in range(length(var.serial_numbers)) : {
-    "serial_number" : var.serial_numbers[index]
+    }] : [for index in range(var.nodes) : {
+    "serial_number" : local.serial_numbers[index]
     "int-a" : var.internal_ips[index]
     "ext-1" : var.external_ips[index]
   }]
@@ -127,8 +125,8 @@ locals {
     templatefile("${path.module}/machineid.tftemplate.json", {
       node_number           = node_number
       name                  = var.name
-      timezone              = var.timezone
-      serial_numbers        = var.serial_numbers
+      timezone              = local.timezone
+      serial_numbers        = local.serial_numbers
       data_disk_type        = var.data_disk_type
       devices               = local.devices
       enable_mgmt           = var.enable_mgmt
@@ -154,4 +152,8 @@ locals {
 output "machineid" {
   value       = local.machineid
   description = "The machine ID of the Onefs node"
+}
+
+output "serial_numbers" {
+  value = local.serial_numbers
 }

@@ -173,7 +173,7 @@ locals {
     # https://github.com/hashicorp/terraform-provider-external/issues/4
     hashed_admin_password = lookup(data.external.admin_passphrase.result, "passphrase")
     hashed_root_password  = lookup(data.external.root_passphrase.result, "passphrase")
-    timezone              = var.timezone
+    timezone              = var.timezone == null ? "Greenwich Mean Time" : var.timezone
     os_disk_type          = local.os_disk_type
     data_disks_per_node   = local.data_disks_per_node
     data_disk_size        = local.data_disk_size
@@ -184,7 +184,7 @@ locals {
   }
   node_configs = {
     for node_number in range(local.nodes) : node_number => {
-      serial_number : "SV200-930073-${format("%04d", node_number)}"
+      serial_number : module.machineid.serial_numbers[node_number]
       external_interface_id : aws_network_interface.external_interface[node_number].id
       internal_interface_id : aws_network_interface.internal_interface[node_number].id
       mgmt_interface_id : local.enable_mgmt ? aws_network_interface.mgmt_interface[node_number].id : null
@@ -296,7 +296,6 @@ module "machineid" {
   nodes                 = local.nodes
   name                  = var.name
   timezone              = local.cluster_config.timezone
-  serial_numbers        = [for index in range(local.nodes) : local.node_configs[index].serial_number]
   enable_mgmt           = local.enable_mgmt
   data_disk_type        = local.data_disk_type
   internal_ips          = aws_network_interface.internal_interface[*].private_ip

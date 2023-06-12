@@ -130,7 +130,7 @@ variable "smartconnect_zone" {
 
 variable "timezone" {
   type        = string
-  default     = "Greenwich Mean Time"
+  default     = null
   description = "Time zone for creating OneFS cluster resources in AWS"
 }
 
