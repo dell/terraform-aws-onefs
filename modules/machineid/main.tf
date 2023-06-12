@@ -152,5 +152,6 @@ locals {
 }
 
 output "machineid" {
-  value = local.machineid
+  value       = local.machineid
+  description = "The machine ID of the Onefs node"
 }
