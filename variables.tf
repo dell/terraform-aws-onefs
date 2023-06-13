@@ -211,9 +211,3 @@ variable "partition_count" {
   default     = null
   description = "The number of partitions to create in the placement group. Can only be specified when the placement_group_strategy is set to partition. Valid values are 1 - 7"
 }
-
-variable "onefs_build" {
-  type        = string
-  default     = null
-  description = "Get the ami_id from the build_no"
-}
