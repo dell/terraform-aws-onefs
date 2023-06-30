@@ -376,28 +376,26 @@ resource "aws_instance" "onefs_node" {
       }
     )
   }
-  lifecycle {
-    ignore_changes = [
-      user_data,
-    ]
-  }
-}
 
-resource "aws_ebs_volume" "onefs_volume" {
-  count             = local.nodes * local.cluster_config.data_disks_per_node
-  availability_zone = aws_instance.onefs_node[floor(count.index / local.cluster_config.data_disks_per_node)].availability_zone
-  size              = local.cluster_config.data_disk_size
-  type              = local.cluster_config.data_disk_type
-  iops              = local.cluster_config.data_disk_iops
-  throughput        = local.cluster_config.data_disk_throughput
+  dynamic "ebs_block_device" {
+    for_each = range(local.cluster_config.data_disks_per_node)
 
-  tags = merge(
-    local.cluster_config.resource_tags,
-    {
-      Name = "${local.cluster_config.id}-node-data-${floor(count.index / local.cluster_config.data_disks_per_node)}-${count.index % local.cluster_config.data_disks_per_node}"
+    content {
+      device_name = "xvd${substr("abcdefghijklmnopqrstuvwxyz", ebs_block_device.key, 1)}"
+      volume_size = local.cluster_config.data_disk_size
+      volume_type = local.cluster_config.data_disk_type
+      iops        = local.cluster_config.data_disk_iops
+      throughput  = local.cluster_config.data_disk_throughput
+
+
+      tags = merge(
+        local.cluster_config.resource_tags,
+        {
+          Name = "${local.cluster_config.id}-node-data-${count.index}-${ebs_block_device.key}"
+        }
+      )
     }
-  )
-
+  }
   lifecycle {
     precondition {
       condition = local.cluster_config.validate_volume_type ? contains(
@@ -406,15 +404,12 @@ resource "aws_ebs_volume" "onefs_volume" {
       ) : true
       error_message = "AWS volume type provided \"${local.cluster_config.data_disk_type}\" for \"data_disk_type\" variable is invalid. Disable volume type validation by setting \"validate_volume_type\" to false."
     }
+    ignore_changes = [
+      user_data,
+    ]
   }
 }
 
-resource "aws_volume_attachment" "onefs_node_volume_attachment" {
-  count       = local.cluster_config.data_disks_per_node * local.nodes
-  device_name = "xvdb${substr("abcdefghijklmnopqrstuvwxyz", count.index % local.cluster_config.data_disks_per_node, 1)}"
-  volume_id   = aws_ebs_volume.onefs_volume[count.index].id
-  instance_id = aws_instance.onefs_node[floor(count.index / local.cluster_config.data_disks_per_node)].id
-}
 
 locals {
   # This is a workaround until https://jira.cec.lab.emc.com/browse/OCM-3708 can be reported and then resolved
