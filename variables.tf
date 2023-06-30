@@ -24,7 +24,7 @@ variable "id" {
 }
 
 variable "name" {
-  description = "Name of cluster"
+  description = "The name of the PowerScale Cluster. Cluster names must begin with a letter and can contain only numbers, letters, and hyphens. If the cluster is joined to an Active Directory domain, the cluster name must be 11 characters or fewer."
 }
 
 variable "nodes" {

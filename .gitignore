@@ -9,7 +9,7 @@ artifacts
 .terraform.lock.hcl
 *terraform.tfstate*
 *.tfvars.json
-
+*.tfplan*
 
 artifacts
 .python-version
