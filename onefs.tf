@@ -29,13 +29,6 @@ data "aws_subnet" "mgmt_subnet" {
   id    = var.mgmt_subnet_id
 }
 
-data "aws_ami" "onefs_ami" {
-  filter {
-    name   = "image-id"
-    values = [local.image_id]
-  }
-}
-
 resource "random_id" "admin_salt" {
   keepers = {
     admin_password = var.admin_password
@@ -72,18 +65,6 @@ data "external" "admin_passphrase" {
   "${var.admin_password}"]
 }
 
-data "aws_ami_ids" "onefs_ami_id" {
-  owners = ["self"]
-  filter {
-    name   = "tag:onefs_build"
-    values = [local.onefs_build]
-  }
-  filter {
-    name   = "tag:deployment_method"
-    values = ["onefs_official"]
-  }
-}
-
 locals {
   resource_tags = merge(
     var.resource_tags,
@@ -111,9 +92,6 @@ locals {
   os_disk_type                    = var.os_disk_type == null ? "gp3" : var.os_disk_type
   validate_volume_type            = var.validate_volume_type == null ? true : var.validate_volume_type
   data_disks_per_node             = var.data_disks_per_node == null ? 5 : var.data_disks_per_node
-  onefs_build                     = var.onefs_build == null ? "b.9.6.0.004r" : var.onefs_build
-  ami_id                          = try(data.aws_ami_ids.onefs_ami_id.ids[0], null)
-  image_id                        = var.image_id == null ? local.ami_id : var.image_id
   instance_type                   = var.instance_type == null ? "m5d.large" : var.instance_type
   data_disk_size                  = var.data_disk_size == null ? 16 : var.data_disk_size
   enable_mgmt                     = var.enable_mgmt == null ? false : var.enable_mgmt
@@ -172,7 +150,7 @@ locals {
     id                   = var.id
     name                 = var.name
     resource_tags        = local.resource_tags
-    image_id             = data.aws_ami.onefs_ami.image_id
+    image_id             = var.image_id
     iam_instance_profile = var.iam_instance_profile
     instance_type        = local.instance_type
     credentials_hashed   = var.credentials_hashed
