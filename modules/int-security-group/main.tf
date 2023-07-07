@@ -8,11 +8,9 @@
 
 */
 
-
-
 resource "aws_security_group" "internal" {
   name   = "${var.id}-sg-internal-iface"
-  vpc_id = data.aws_vpc.main.id
+  vpc_id = var.network_id
 
   tags = merge(
     var.resource_tags,
