@@ -108,9 +108,6 @@ module "onefsbase" {
   root_password               = var.root_password
   security_group_external_id  = var.security_group_external_id
   security_group_mgmt_id      = var.security_group_mgmt_id
-  skip_credentials_validation = var.skip_credentials_validation
-  skip_metadata_api_check     = var.skip_metadata_api_check
-  skip_requesting_account_id  = var.skip_requesting_account_id
   smartconnect_hostnum        = var.smartconnect_hostnum
   smartconnect_zone           = var.smartconnect_zone
   timezone                    = var.timezone
@@ -180,14 +177,3 @@ output "region" {
   value = module.onefsbase.region
 }
 
-output "skip_credentials_validation" {
-  value = module.onefsbase.skip_credentials_validation
-}
-
-output "skip_requesting_account_id" {
-  value = module.onefsbase.skip_requesting_account_id
-}
-
-output "skip_metadata_api_check" {
-  value = module.onefsbase.skip_metadata_api_check
-}

@@ -8,13 +8,6 @@
 
 */
 
-provider "aws" {
-  region                      = var.region
-  skip_credentials_validation = var.skip_credentials_validation
-  skip_requesting_account_id  = var.skip_requesting_account_id
-  skip_metadata_api_check     = var.skip_metadata_api_check
-}
-
 locals {
   resource_tags = merge(
     var.resource_tags,
@@ -401,17 +394,5 @@ output "gateway_hostnum" {
 output "region" {
   value       = var.region
   description = "AWS region where the cluster resources were created"
-}
-
-output "skip_credentials_validation" {
-  value = var.skip_credentials_validation
-}
-
-output "skip_requesting_account_id" {
-  value = var.skip_requesting_account_id
-}
-
-output "skip_metadata_api_check" {
-  value = var.skip_metadata_api_check
 }
 
