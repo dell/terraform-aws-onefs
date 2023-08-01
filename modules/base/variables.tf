@@ -103,15 +103,6 @@ variable "security_group_external_id" {}
 variable "security_group_mgmt_id" {
   default = null
 }
-variable "skip_credentials_validation" {
-  default = false
-}
-variable "skip_requesting_account_id" {
-  default = false
-}
-variable "skip_metadata_api_check" {
-  default = false
-}
 variable "smartconnect_hostnum" {
   default = 4
 }
