@@ -29,42 +29,6 @@ data "aws_subnet" "mgmt_subnet" {
   id    = var.mgmt_subnet_id
 }
 
-resource "random_id" "admin_salt" {
-  keepers = {
-    admin_password = var.admin_password
-  }
-
-  byte_length = 8
-}
-
-resource "random_id" "root_salt" {
-  keepers = {
-    root_password = var.root_password
-  }
-
-  byte_length = 8
-}
-
-data "external" "root_passphrase" {
-  program = ["python",
-    "-m",
-    "onefs_workflows.passphrase",
-    "--salt",
-    "${random_id.root_salt.hex}",
-    "--password",
-  "${var.root_password}"]
-}
-
-data "external" "admin_passphrase" {
-  program = ["python",
-    "-m",
-    "onefs_workflows.passphrase",
-    "--salt",
-    "${random_id.admin_salt.hex}",
-    "--password",
-  "${var.admin_password}"]
-}
-
 locals {
   enable_mgmt = var.enable_mgmt == null ? false : var.enable_mgmt
 }
@@ -120,8 +84,8 @@ module "onefsbase" {
   # Don't alter this format without first consulting these links:
   # https://github.com/hashicorp/terraform/issues/17173
   # https://github.com/hashicorp/terraform-provider-external/issues/4
-  hashed_admin_password = lookup(data.external.admin_passphrase.result, "passphrase")
-  hashed_root_password  = lookup(data.external.root_passphrase.result, "passphrase")
+  hashed_admin_password = var.admin_passphrase
+  hashed_root_password  = var.root_passphrase
 }
 
 
