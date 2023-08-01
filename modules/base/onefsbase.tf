@@ -33,13 +33,6 @@ locals {
   min_cluster_size                = 1
   additional_nodes                = local.nodes - local.min_cluster_size
   external_network_config = {
-    # Check all external ifaces as SSIP can move off node 1.
-    smartconnect_ip = local.contiguous_ips ? cidrhost(var.external_subnet_cidr_block, var.smartconnect_hostnum) : tolist(
-      setsubtract(
-        toset(flatten([for nic in aws_network_interface.external_interface[*] : nic.private_ips])),
-        toset([for nic in aws_network_interface.external_interface[*] : nic.private_ip])
-      )
-    )[0]
     smartconnect_zone = var.smartconnect_zone == null ? local.cluster_config.name + ".internal" : var.smartconnect_zone
     ip_address_ranges = local.contiguous_ips ? [{
       "low"  = cidrhost(var.external_subnet_cidr_block, var.first_external_node_hostnum)
@@ -359,11 +352,6 @@ output "mgmt_ip_addresses" {
 output "instance_id" {
   value       = try(aws_instance.onefs_node[*].id, [])
   description = "Instance ID of all the cluster nodes(EC2 VMs)."
-}
-
-output "smartconnect_ip" {
-  value       = local.external_network_config.smartconnect_ip
-  description = "SmartConnect Service IP for the external subnet.."
 }
 
 output "additional_nodes" {

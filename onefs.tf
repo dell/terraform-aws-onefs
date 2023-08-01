@@ -149,10 +149,6 @@ output "instance_id" {
   value = module.onefsbase.instance_id
 }
 
-output "smartconnect_ip" {
-  value = module.onefsbase.smartconnect_ip
-}
-
 output "additional_nodes" {
   value = module.onefsbase.additional_nodes
 }
