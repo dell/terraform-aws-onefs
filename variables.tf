@@ -212,21 +212,6 @@ variable "partition_count" {
   description = "The number of partitions to create in the placement group. Can only be specified when the placement_group_strategy is set to partition. Valid values are 1 - 7"
 }
 
-variable "skip_credentials_validation" {
-  default     = false
-  description = "Whether to skip credentials validation. Used to run terraform plan with no network connection"
-}
-
-variable "skip_requesting_account_id" {
-  default     = false
-  description = "Whether to return an empty account ID when constructing some ARN attributes. Used to run terraform plan with no network connection"
-}
-
-variable "skip_metadata_api_check" {
-  default     = false
-  description = "Prevents terraform from authenticating with the metadata API. Used to run terraform plan with no network connection"
-}
-
 #
 #  INTERNAL Networking Inteface Security Group & Rules
 #

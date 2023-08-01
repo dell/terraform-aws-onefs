@@ -8,13 +8,6 @@
 
 */
 
-provider "aws" {
-  region                      = var.region
-  skip_credentials_validation = var.skip_credentials_validation
-  skip_requesting_account_id  = var.skip_requesting_account_id
-  skip_metadata_api_check     = var.skip_metadata_api_check
-}
-
 locals {
   resource_tags = merge(
     var.resource_tags,
@@ -40,13 +33,6 @@ locals {
   min_cluster_size                = 1
   additional_nodes                = local.nodes - local.min_cluster_size
   external_network_config = {
-    # Check all external ifaces as SSIP can move off node 1.
-    smartconnect_ip = local.contiguous_ips ? cidrhost(var.external_subnet_cidr_block, var.smartconnect_hostnum) : tolist(
-      setsubtract(
-        toset(flatten([for nic in aws_network_interface.external_interface[*] : nic.private_ips])),
-        toset([for nic in aws_network_interface.external_interface[*] : nic.private_ip])
-      )
-    )[0]
     smartconnect_zone = var.smartconnect_zone == null ? local.cluster_config.name + ".internal" : var.smartconnect_zone
     ip_address_ranges = local.contiguous_ips ? [{
       "low"  = cidrhost(var.external_subnet_cidr_block, var.first_external_node_hostnum)
@@ -368,11 +354,6 @@ output "instance_id" {
   description = "Instance ID of all the cluster nodes(EC2 VMs)."
 }
 
-output "smartconnect_ip" {
-  value       = local.external_network_config.smartconnect_ip
-  description = "SmartConnect Service IP for the external subnet.."
-}
-
 output "additional_nodes" {
   value       = local.additional_nodes
   description = "Number cluster nodes created minus 1, which means additional_nodes value is 2 if 3 node cluster is created."
@@ -401,17 +382,5 @@ output "gateway_hostnum" {
 output "region" {
   value       = var.region
   description = "AWS region where the cluster resources were created"
-}
-
-output "skip_credentials_validation" {
-  value = var.skip_credentials_validation
-}
-
-output "skip_requesting_account_id" {
-  value = var.skip_requesting_account_id
-}
-
-output "skip_metadata_api_check" {
-  value = var.skip_metadata_api_check
 }
 
