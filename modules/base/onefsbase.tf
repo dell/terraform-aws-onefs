@@ -272,6 +272,7 @@ resource "aws_instance" "onefs_node" {
   }
 
   root_block_device {
+    volume_size = var.os_disk_size
     volume_type = local.cluster_config.os_disk_type
 
     tags = merge(
