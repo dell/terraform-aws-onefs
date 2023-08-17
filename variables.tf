@@ -77,11 +77,13 @@ variable "smartconnect_hostnum" {
 
 variable "first_external_node_hostnum" {
   default     = 5
+  type        = number
   description = "Only applicable when contiguous_ips is true"
 }
 
 variable "first_internal_node_hostnum" {
   default     = 5
+  type        = number
   description = "Host number for the first internal node"
 }
 
@@ -122,12 +124,22 @@ variable "image_id" {
 
 variable "dns_servers" {
   default     = ["169.254.169.253"]
+  type        = list(string)
   description = "DNS server to route traffic"
+  validation {
+    condition     = alltrue([for each_address in var.dns_servers : can(cidrhost("${each_address}/32", 0))])
+    error_message = "For the dns_servers value the valid input is a list of IP addresses."
+  }
 }
 
 variable "dns_domains" {
-  default     = ["us-east-1.compute.internal"]
+  default     = null
+  type        = list(string)
   description = "DNS domain to route traffic"
+  validation {
+    condition     = var.dns_domains == null ? true : alltrue([for each_domain in var.dns_domains : can(regex("^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\\.[a-zA-Z]{2,})+$", each_domain))])
+    error_message = "For the dns_domains value the valid input is a list of domain names."
+  }
 }
 
 variable "smartconnect_zone" {
@@ -179,11 +191,13 @@ variable "data_disks_per_node" {
 
 variable "data_disk_iops" {
   default     = null
+  type        = number
   description = "IOPS value for EBS volume"
 }
 
 variable "data_disk_throughput" {
   default     = null
+  type        = number
   description = "Throughput for EBS volume"
 }
 
