@@ -10,6 +10,7 @@
 
 variable "admin_password" {
   sensitive = true
+  default   = null
 }
 variable "availability_zone" {}
 variable "contiguous_ips" {
@@ -74,7 +75,6 @@ variable "mgmt_subnet_id" {
   default = null
 }
 variable "name" {}
-variable "network_id" {}
 variable "nodes" {
   default = null
 }
@@ -102,6 +102,7 @@ variable "resource_tags" {
 }
 variable "root_password" {
   sensitive = true
+  default   = null
 }
 variable "security_group_external_id" {}
 variable "security_group_mgmt_id" {

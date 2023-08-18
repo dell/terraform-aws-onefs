@@ -12,10 +12,6 @@ provider "aws" {
   region = var.region
 }
 
-data "aws_vpc" "main" {
-  id = var.network_id
-}
-
 data "aws_subnet" "internal_subnet" {
   id = var.internal_subnet_id
 }
@@ -62,7 +58,6 @@ module "onefsbase" {
   linear_journal              = var.linear_journal
   mgmt_subnet_id              = var.mgmt_subnet_id
   name                        = var.name
-  network_id                  = var.network_id
   nodes                       = var.nodes
   os_disk_type                = var.os_disk_type
   partition_count             = var.partition_count

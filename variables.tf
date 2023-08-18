@@ -19,10 +19,6 @@ variable "iam_instance_profile" {
   description = "AWS IAM instance profile for attaching to onefs nodes(EC2 VMs)"
 }
 
-variable "network_id" {
-  description = "VPC ID, where the cluster resources will get created"
-}
-
 variable "id" {
   description = "Cluster ID, an unique identifier for onefs cluster"
 }
