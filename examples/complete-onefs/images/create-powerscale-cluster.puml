@@ -1,0 +1,36 @@
+@startuml add-node-sequence
+
+skinparam NoteBackgroundColor red
+!theme bluegray
+
+actor Customer
+
+participant Terraform
+collections OneFS
+
+== Deploy Terraform Modules ==
+Customer -->o Terraform: <b>[Optional]</b> Deploy IAM resources Module
+Terraform -->o  Customer: Wait for terraform apply to complete
+Customer ->o  Terraform: Deploy External Security Group Module
+Terraform ->o  Customer: Wait for terraform apply to complete
+Customer ->o  Terraform: Deploy Internal Security Group Module
+Terraform ->o  Customer: Wait for terraform apply to complete
+Customer ->o  Terraform: Deploy OneFS Module
+Terraform ->o  Customer: Wait for terraform apply to complete
+
+== Post Deploy Steps ==
+
+Customer -> Customer: Wait for first node to boot and get auto-registered to the cluster
+Customer -> OneFS: SSH to the first node which is auto-registered in the cluster
+group Cluster Network Configuration
+    Customer -> OneFS : Configure SmartConnect IP
+    Customer -> OneFS: Configure internal network interface's IP addresses
+end
+
+group Repeat for the rest of the of n-1 nodes
+    Customer -> OneFS: Add external IP to network pool
+    Customer -> OneFS: Add node
+    Customer -> OneFS: Wait for node join
+end
+
+@enduml

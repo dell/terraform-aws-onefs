@@ -7,12 +7,12 @@
         file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 -->
-# Powerscale OneFS Nodes Runtime IAM Resources Module
+# PowerScale OneFS Nodes Runtime IAM Resources Module
 
 ## Introduction
 
 This folder contains a [Terraform](https://www.terraform.io/) module that defines the [IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html) resources, that are used by a 
-[Powerscale](https://www.delltechnologies.com/partner/en-us/partner/powerscale.htm) cluster in the [AWS](https://aws.amazon.com/) platform.
+[PowerScale](https://www.delltechnologies.com/partner/en-us/partner/powerscale.htm) cluster in the [AWS](https://aws.amazon.com/) platform.
 
 It provisions the following resources:
 1. [IAM policy](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html)
@@ -21,7 +21,7 @@ It provisions the following resources:
 
 ## Definition
 
-To ensure that the nodes which are part of a particular Powerscale cluster have the necessary permissions, you can use this module to create a new Security Group and attach the necessary rules as follows:
+To ensure that the nodes which are part of a particular PowerScale cluster have the necessary permissions, you can use this module to create a new Security Group and attach the necessary rules as follows:
 
 ```hcl
 module "onefs_iam_resources" {
@@ -49,7 +49,7 @@ The module takes the following input parameters:
   **NOTE**: Here `v0.0.1` needs to be a valid [tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) assigned with a particular Git commit.
 
 
-* `regions`: A comma separated list of the [AWS regions](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) where Powerscale cluster(s) are going to be deployed. To allow all regions, provide ["*"].
+* `regions`: A comma separated list of the [AWS regions](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) where PowerScale cluster(s) are going to be deployed. To allow all regions, provide ["*"].
   
   *Eg.*: `["us-west-2", "us-east-2"]`
 
