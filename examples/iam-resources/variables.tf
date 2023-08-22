@@ -7,6 +7,7 @@
         file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 */
+
 variable "regions" {
   default     = ["*"]
   description = <<EOT
