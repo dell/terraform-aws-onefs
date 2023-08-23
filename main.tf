@@ -72,11 +72,11 @@ module "onefsbase" {
   timezone                    = var.timezone
   validate_instance_type      = var.validate_instance_type
   validate_volume_type        = var.validate_volume_type
-
-  internal_subnet_cidr_block = data.aws_subnet.internal_subnet.cidr_block
-  external_subnet_cidr_block = data.aws_subnet.external_subnet.cidr_block
-  mgmt_subnet_cidr_block     = local.enable_mgmt ? data.aws_subnet.mgmt_subnet[0].cidr_block : null
-  image_id                   = var.image_id
+  validate_nodes_count        = var.validate_nodes_count
+  internal_subnet_cidr_block  = data.aws_subnet.internal_subnet.cidr_block
+  external_subnet_cidr_block  = data.aws_subnet.external_subnet.cidr_block
+  mgmt_subnet_cidr_block      = local.enable_mgmt ? data.aws_subnet.mgmt_subnet[0].cidr_block : null
+  image_id                    = var.image_id
   # Don't alter this format without first consulting these links:
   # https://github.com/hashicorp/terraform/issues/17173
   # https://github.com/hashicorp/terraform-provider-external/issues/4

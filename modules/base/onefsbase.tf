@@ -18,7 +18,7 @@ locals {
 }
 
 locals {
-  nodes                           = var.nodes == null ? 3 : var.nodes
+  nodes                           = var.nodes == null ? 4 : var.nodes
   pg_spread_max_instances         = 7
   placement_group_strategy        = var.placement_group_strategy == null ? "spread" : var.placement_group_strategy
   pg_partition_default_partitions = 7
@@ -27,6 +27,7 @@ locals {
   os_disk_type                    = var.os_disk_type == null ? "gp3" : var.os_disk_type
   validate_instance_type          = var.validate_instance_type == null ? true : var.validate_instance_type
   validate_volume_type            = var.validate_volume_type == null ? true : var.validate_volume_type
+  validate_nodes_count            = var.validate_nodes_count == null ? true : var.validate_nodes_count
   data_disks_per_node             = var.data_disks_per_node == null ? 5 : var.data_disks_per_node
   instance_type                   = var.instance_type == null ? local.allowed_instance_types[0] : var.instance_type
   data_disk_size                  = var.data_disk_size == null ? 16 : var.data_disk_size
@@ -99,6 +100,7 @@ locals {
     data_disk_throughput   = var.data_disk_throughput
     validate_instance_type = local.validate_instance_type
     validate_volume_type   = local.validate_volume_type
+    validate_nodes_count   = local.validate_nodes_count
   }
   node_configs = {
     for node_number in range(local.nodes) : node_number => {
@@ -319,6 +321,10 @@ resource "aws_instance" "onefs_node" {
         local.cluster_config.data_disk_type
       ) : true
       error_message = "AWS volume type provided \"${local.cluster_config.data_disk_type}\" for \"data_disk_type\" variable is invalid. Disable volume type validation by setting \"validate_volume_type\" to false."
+    }
+    precondition {
+      condition     = local.cluster_config.validate_nodes_count ? (var.nodes >= 4 && var.nodes <= 6) : true
+      error_message = "Number of nodes specified: \"${local.nodes}\" doesn't fall in the valid range for number of nodes, i.e. 4-6. Disable nodes` count validation by setting \"validate_nodes_count\" to false."
     }
     ignore_changes = [
       user_data,

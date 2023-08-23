@@ -129,6 +129,11 @@ variable "validate_volume_type" {
   default = null
 }
 
+variable "validate_nodes_count" {
+  type    = bool
+  default = null
+}
+
 # Deprecated as part of OCM-4282
 variable "linear_journal" {
   type    = bool
