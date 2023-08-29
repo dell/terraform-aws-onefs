@@ -70,6 +70,7 @@ module "onefsbase" {
   smartconnect_hostnum        = var.smartconnect_hostnum
   smartconnect_zone           = var.smartconnect_zone
   timezone                    = var.timezone
+  validate_instance_type      = var.validate_instance_type
   validate_volume_type        = var.validate_volume_type
 
   internal_subnet_cidr_block = data.aws_subnet.internal_subnet.cidr_block
