@@ -174,3 +174,8 @@ variable "validate_volume_type" {
   type    = bool
   default = true
 }
+
+variable "data_disk_size" {
+  default     = null
+  description = "Size of the volume, if null it takes 16"
+}

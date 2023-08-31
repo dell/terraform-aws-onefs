@@ -34,7 +34,7 @@ Create the `terraform.tfvars.json` file and provide the following required input
 Replace the values of `image_id`, `vpc_id`, `internal_subnet_id`, `external_subnet_id`, `default_hashed_password`, etc.
 In case, you also have a management subnet, make sure that you update the value for `enable_mgmt` as `true` and provide the management subnet id using the `mgmt_subnet_id` input variable, and management security group id using `mgmt_sg_id`.
 
-For using a pre-existing [IAM instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html), provide the name of that IAM instance profile to the `instance_iam_role` input variable. If not provided, it will deploy the [IAM resources module](../../modules/iam-resources/).
+For using a pre-existing [IAM instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html), provide the name of that IAM instance profile to the `iam_instance_profile` input variable. If not provided, it will deploy the [IAM resources module](../../modules/iam-resources/).
 
 ### Admin and Root User Password
 
