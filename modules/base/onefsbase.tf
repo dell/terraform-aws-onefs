@@ -18,25 +18,27 @@ locals {
 }
 
 locals {
-  nodes                           = var.nodes == null ? 4 : var.nodes
-  pg_spread_max_instances         = 7
-  placement_group_strategy        = var.placement_group_strategy == null ? "spread" : var.placement_group_strategy
-  pg_partition_default_partitions = 7
-  partition_count                 = var.partition_count == null ? (local.placement_group_strategy == "partition" ? local.pg_partition_default_partitions : 0) : var.partition_count
-  data_disk_type                  = var.data_disk_type == null ? "gp3" : var.data_disk_type
-  os_disk_type                    = var.os_disk_type == null ? "gp3" : var.os_disk_type
-  validate_instance_type          = var.validate_instance_type == null ? true : var.validate_instance_type
-  validate_volume_type            = var.validate_volume_type == null ? true : var.validate_volume_type
-  validate_nodes_count            = var.validate_nodes_count == null ? true : var.validate_nodes_count
-  data_disks_per_node             = var.data_disks_per_node == null ? 5 : var.data_disks_per_node
-  instance_type                   = var.instance_type == null ? local.allowed_instance_types[0] : var.instance_type
-  data_disk_size                  = var.data_disk_size == null ? 16 : var.data_disk_size
-  contiguous_ips                  = var.contiguous_ips == null ? false : var.contiguous_ips
-  min_cluster_size                = 1
-  allowed_instance_types          = ["m5dn.8xlarge", "m5dn.12xlarge", "m5dn.16xlarge", "m5dn.24xlarge", "m5d.24xlarge", "m6idn.8xlarge", "m6idn.12xlarge", "m6idn.16xlarge", "m6idn.24xlarge"]
-  allowed_data_disk_types         = ["gp3", "st1"]
-  additional_nodes                = local.nodes - local.min_cluster_size
-  gateway_hostnum                 = 1
+  nodes                              = var.nodes == null ? 4 : var.nodes
+  pg_spread_max_instances            = 7
+  placement_group_strategy           = var.placement_group_strategy == null ? local.allowed_placement_group_strategies[0] : var.placement_group_strategy
+  validate_placement_group_strategy  = var.validate_placement_group_strategy == null ? true : var.validate_placement_group_strategy
+  allowed_placement_group_strategies = ["spread"]
+  pg_partition_default_partitions    = 7
+  partition_count                    = var.partition_count == null ? (local.placement_group_strategy == "partition" ? local.pg_partition_default_partitions : 0) : var.partition_count
+  data_disk_type                     = var.data_disk_type == null ? "gp3" : var.data_disk_type
+  os_disk_type                       = var.os_disk_type == null ? "gp3" : var.os_disk_type
+  validate_instance_type             = var.validate_instance_type == null ? true : var.validate_instance_type
+  validate_volume_type               = var.validate_volume_type == null ? true : var.validate_volume_type
+  validate_nodes_count               = var.validate_nodes_count == null ? true : var.validate_nodes_count
+  data_disks_per_node                = var.data_disks_per_node == null ? 5 : var.data_disks_per_node
+  instance_type                      = var.instance_type == null ? local.allowed_instance_types[0] : var.instance_type
+  data_disk_size                     = var.data_disk_size == null ? 16 : var.data_disk_size
+  contiguous_ips                     = var.contiguous_ips == null ? false : var.contiguous_ips
+  min_cluster_size                   = 1
+  allowed_instance_types             = ["m5dn.8xlarge", "m5dn.12xlarge", "m5dn.16xlarge", "m5dn.24xlarge", "m5d.24xlarge", "m6idn.8xlarge", "m6idn.12xlarge", "m6idn.16xlarge", "m6idn.24xlarge"]
+  allowed_data_disk_types            = ["gp3", "st1"]
+  additional_nodes                   = local.nodes - local.min_cluster_size
+  gateway_hostnum                    = 1
   external_network_config = {
     ip_address_ranges = local.contiguous_ips ? [{
       "low"  = cidrhost(var.external_subnet_cidr_block, var.first_external_node_hostnum)
@@ -185,6 +187,20 @@ resource "aws_placement_group" "onefs_placement_group" {
   partition_count = local.partition_count
 
   lifecycle {
+    precondition {
+      condition = local.validate_placement_group_strategy ? contains(
+        local.allowed_placement_group_strategies,
+        local.placement_group_strategy
+      ) : true
+      error_message = join("", [
+        "EC2 placement group strategy provided: \"${local.placement_group_strategy}\" for \"placement_group_strategy\" ",
+        "variable is invalid. Allowed placement group strategies for OneFS nodes ",
+        "${length(local.allowed_placement_group_strategies) <= 1 ? "is" : "are"}: ",
+        "${join(", ", local.allowed_placement_group_strategies)}. Disable placement group strategy validation by setting ",
+        "\"validate_placement_group_strategy\" to false."
+      ])
+    }
+
     precondition {
       condition = (
         !(local.nodes > local.pg_spread_max_instances && local.placement_group_strategy == "spread")

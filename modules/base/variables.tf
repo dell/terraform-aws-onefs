@@ -90,6 +90,12 @@ variable "partition_count" {
 variable "placement_group_strategy" {
   default = null
 }
+
+variable "validate_placement_group_strategy" {
+  type    = bool
+  default = null
+}
+
 variable "region" {
   default = "us-east-1"
 }
