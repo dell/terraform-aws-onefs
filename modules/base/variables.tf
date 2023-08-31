@@ -55,9 +55,7 @@ variable "first_internal_node_hostnum" {
 variable "first_mgmt_node_hostnum" {
   default = 5
 }
-variable "gateway_hostnum" {
-  default = 1
-}
+
 variable "http_tokens" {
   default = null
 }
@@ -108,12 +106,7 @@ variable "security_group_external_id" {}
 variable "security_group_mgmt_id" {
   default = null
 }
-variable "smartconnect_hostnum" {
-  default = 4
-}
-variable "smartconnect_zone" {
-  type = string
-}
+
 variable "timezone" {
   type    = string
   default = null
@@ -130,12 +123,6 @@ variable "validate_volume_type" {
 }
 
 variable "validate_nodes_count" {
-  type    = bool
-  default = null
-}
-
-# Deprecated as part of OCM-4282
-variable "linear_journal" {
   type    = bool
   default = null
 }

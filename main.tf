@@ -48,14 +48,12 @@ module "onefsbase" {
   first_external_node_hostnum = var.first_external_node_hostnum
   first_internal_node_hostnum = var.first_internal_node_hostnum
   first_mgmt_node_hostnum     = var.first_mgmt_node_hostnum
-  gateway_hostnum             = var.gateway_hostnum
   http_tokens                 = var.http_tokens
   iam_instance_profile        = var.iam_instance_profile
   id                          = var.id
   instance_type               = var.instance_type
   internal_sg_id              = var.internal_sg_id
   internal_subnet_id          = var.internal_subnet_id
-  linear_journal              = var.linear_journal
   mgmt_subnet_id              = var.mgmt_subnet_id
   name                        = var.name
   nodes                       = var.nodes
@@ -67,8 +65,6 @@ module "onefsbase" {
   root_password               = var.root_password
   security_group_external_id  = var.security_group_external_id
   security_group_mgmt_id      = var.security_group_mgmt_id
-  smartconnect_hostnum        = var.smartconnect_hostnum
-  smartconnect_zone           = var.smartconnect_zone
   timezone                    = var.timezone
   validate_instance_type      = var.validate_instance_type
   validate_volume_type        = var.validate_volume_type

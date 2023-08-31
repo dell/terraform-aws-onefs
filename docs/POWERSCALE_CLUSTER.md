@@ -73,10 +73,6 @@ The module takes the following input parameters:
 
 * `contiguous_ips`: A boolean flag to indicate whether to allocate contiguous IPv4 addresses to the external and management(if enabled) elastic network interfaces.
 
-* `gateway_hostnum`: The host number of the gateway in a subnet. The default value is `1`.
-
-* `smartconnect_hostnum`: The smart connect host number.  Only applicable when contiguous_ips is `true`. The default value is `4`.
-
 * `first_external_node_hostnum`: The host number of the first external node. Only applicable when contiguous_ips is `true`. The default value is `5`.
 
 * `first_internal_node_hostnum`: The host number of the first internal node. Only applicable when contiguous_ips is `true`. The default value is `5`.
@@ -99,8 +95,6 @@ The module takes the following input parameters:
 
 * `dns_domains`: The DNS domain to route traffic. The default value is `us-east-1.compute.internal`.
 
-* `smartconnect_zone`: The FQDN to use as the DNS zone for SmartConnect.
-
 * `timezone`: "Time zone for creating the PowerScale cluster resources in AWS.
 
 * `resource_tags`: The tags to be attached to the AWS resources. The tags can be a key-value pair. The allowed values of the value in the key-value pair can be found [here](https://developer.hashicorp.com/terraform/language/expressions/types#types).
@@ -118,8 +112,6 @@ The module takes the following input parameters:
 * `data_disk_iops`: IOPS value of the secondary EBS volume(s) attached to the OneFS nodes in the PowerScale Cluster. 
 
 * `data_disk_throughput`: Throughput value of the secondary EBS volume(s) attached to the OneFS nodes in the PowerScale Cluster. 
-
-* `linear_journal`: A boolean flag to set Linear journal value.
 
 * `validate_volume_type`: A boolean flag to indicate whether to validate the input to the parameter `data_disk_type`. If set to true, the allowed value for `data_disk_type` is `gp3`.
 

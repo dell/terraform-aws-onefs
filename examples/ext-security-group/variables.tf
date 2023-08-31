@@ -20,11 +20,6 @@ variable "resource_tags" {
   description = "The Tags to be associated with the external security Group"
 }
 
-variable "gateway_hostnum" {
-  description = "The host number of the gateway in a subnet."
-  default     = 1
-}
-
 variable "vpc_id" {
   description = "The VPC Id to be used for creating the external security group"
 }

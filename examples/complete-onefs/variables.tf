@@ -138,10 +138,6 @@ variable "cluster_name" {
   description = "The name of the PowerScale Cluster. Cluster names must begin with a letter and can contain only numbers, letters, and hyphens. If the cluster is joined to an Active Directory domain, the cluster name must be 11 characters or fewer."
 }
 
-variable "smartconnect_zone" {
-  default = null
-}
-
 variable "external_sg_id" {
   default = null
 }

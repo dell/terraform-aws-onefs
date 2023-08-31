@@ -61,7 +61,7 @@ output "node_configs" {
 }
 
 output "gateway_hostnum" {
-  value       = var.gateway_hostnum
+  value       = local.gateway_hostnum
   description = "The host number of the gateway in a subnet."
 }
 
