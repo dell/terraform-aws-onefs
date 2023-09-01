@@ -221,13 +221,13 @@ variable "internal_sg_id" {
   description = "Security group ID to be attached to the internal network interfaces"
 }
 
-variable "root_passphrase" {
+variable "hashed_root_passphrase" {
   type        = string
   default     = null
   description = "hashed root passphrase to create the onefs cluster"
 }
 
-variable "admin_passphrase" {
+variable "hashed_admin_passphrase" {
   type        = string
   default     = null
   description = "hashed admin passphrase to create the onefs cluster"

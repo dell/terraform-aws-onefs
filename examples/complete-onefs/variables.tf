@@ -104,13 +104,13 @@ variable "default_plain_text_password" {
   default     = null
 }
 
-variable "admin_passphrase" {
+variable "hashed_admin_passphrase" {
   sensitive   = true
   default     = null
   description = "The admin user's hashed password for the OneFS cluster. Applicable only when credentials_hashed is set as true"
 }
 
-variable "root_passphrase" {
+variable "hashed_root_passphrase" {
   sensitive   = true
   default     = null
   description = "The root user's hashed password for the OneFS cluster. Applicable only when credentials_hashed is set as true"

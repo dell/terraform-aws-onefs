@@ -61,8 +61,8 @@ module "onefs" {
   enable_mgmt                = var.enable_mgmt
   contiguous_ips             = var.contiguous_ips
   credentials_hashed         = var.credentials_hashed
-  root_passphrase            = var.root_passphrase == null ? var.default_hashed_password : var.root_passphrase
-  admin_passphrase           = var.admin_passphrase == null ? var.default_hashed_password : var.admin_passphrase
+  hashed_root_passphrase     = var.hashed_root_passphrase == null ? var.default_hashed_password : var.hashed_root_passphrase
+  hashed_admin_passphrase    = var.hashed_admin_passphrase == null ? var.default_hashed_password : var.hashed_admin_passphrase
   security_group_external_id = var.external_sg_id == null ? module.external_security_group[0].external_sg_id : var.external_sg_id
   security_group_mgmt_id     = try(var.mgmt_sg_id, null)
   nodes                      = var.nodes
