@@ -150,6 +150,7 @@ variable "resource_tags" {
 variable "instance_type" {
   default     = null
   description = "Instance type determines the number of CPU cores, the amount of memory, the storage capacity, and the networking capabilities of instance(OneFS nodes)"
+  type        = string
 }
 
 variable "os_disk_type" {
@@ -190,6 +191,12 @@ variable "linear_journal" {
   type        = bool
   default     = null
   description = "Boolean var to set Linear journal value to true or false"
+}
+
+variable "validate_instance_type" {
+  type        = bool
+  default     = null
+  description = "Boolean variable to validate EC2 instance type"
 }
 
 variable "validate_volume_type" {

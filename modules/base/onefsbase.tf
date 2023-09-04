@@ -25,12 +25,14 @@ locals {
   partition_count                 = var.partition_count == null ? (local.placement_group_strategy == "partition" ? local.pg_partition_default_partitions : 0) : var.partition_count
   data_disk_type                  = var.data_disk_type == null ? "gp3" : var.data_disk_type
   os_disk_type                    = var.os_disk_type == null ? "gp3" : var.os_disk_type
+  validate_instance_type          = var.validate_instance_type == null ? true : var.validate_instance_type
   validate_volume_type            = var.validate_volume_type == null ? true : var.validate_volume_type
   data_disks_per_node             = var.data_disks_per_node == null ? 5 : var.data_disks_per_node
-  instance_type                   = var.instance_type == null ? "m5d.large" : var.instance_type
+  instance_type                   = var.instance_type == null ? local.allowed_instance_types[0] : var.instance_type
   data_disk_size                  = var.data_disk_size == null ? 16 : var.data_disk_size
   contiguous_ips                  = var.contiguous_ips == null ? false : var.contiguous_ips
   min_cluster_size                = 1
+  allowed_instance_types          = ["m5dn.8xlarge", "m5dn.12xlarge", "m5dn.16xlarge", "m5dn.24xlarge", "m5d.24xlarge", "m6idn.8xlarge", "m6idn.12xlarge", "m6idn.16xlarge", "m6idn.24xlarge"]
   additional_nodes                = local.nodes - local.min_cluster_size
   external_network_config = {
     smartconnect_zone = var.smartconnect_zone == null ? local.cluster_config.name + ".internal" : var.smartconnect_zone
@@ -86,16 +88,17 @@ locals {
     # Don't alter this format without first consulting these links:
     # https://github.com/hashicorp/terraform/issues/17173
     # https://github.com/hashicorp/terraform-provider-external/issues/4
-    hashed_admin_password = var.hashed_admin_password
-    hashed_root_password  = var.hashed_root_password
-    timezone              = var.timezone == null ? "Greenwich Mean Time" : var.timezone
-    os_disk_type          = local.os_disk_type
-    data_disks_per_node   = local.data_disks_per_node
-    data_disk_size        = local.data_disk_size
-    data_disk_type        = local.data_disk_type
-    data_disk_iops        = var.data_disk_iops
-    data_disk_throughput  = var.data_disk_throughput
-    validate_volume_type  = local.validate_volume_type
+    hashed_admin_password  = var.hashed_admin_password
+    hashed_root_password   = var.hashed_root_password
+    timezone               = var.timezone == null ? "Greenwich Mean Time" : var.timezone
+    os_disk_type           = local.os_disk_type
+    data_disks_per_node    = local.data_disks_per_node
+    data_disk_size         = local.data_disk_size
+    data_disk_type         = local.data_disk_type
+    data_disk_iops         = var.data_disk_iops
+    data_disk_throughput   = var.data_disk_throughput
+    validate_instance_type = local.validate_instance_type
+    validate_volume_type   = local.validate_volume_type
   }
   node_configs = {
     for node_number in range(local.nodes) : node_number => {
@@ -303,6 +306,13 @@ resource "aws_instance" "onefs_node" {
     }
   }
   lifecycle {
+    precondition {
+      condition = local.cluster_config.validate_instance_type ? contains(
+        local.allowed_instance_types,
+        local.cluster_config.instance_type
+      ) : true
+      error_message = "EC2 Instance type provided \"${local.cluster_config.instance_type}\" for \"instance_type\" variable is invalid. Allowed Instance types for OneFS nodes are ${join(", ", local.allowed_instance_types)}. Disable Instance type validation by setting \"validate_instance_type\" to false."
+    }
     precondition {
       condition = local.cluster_config.validate_volume_type ? contains(
         ["gp3"],

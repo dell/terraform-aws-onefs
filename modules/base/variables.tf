@@ -118,6 +118,12 @@ variable "timezone" {
   type    = string
   default = null
 }
+
+variable "validate_instance_type" {
+  type    = bool
+  default = null
+}
+
 variable "validate_volume_type" {
   type    = bool
   default = null
