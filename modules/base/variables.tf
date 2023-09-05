@@ -37,7 +37,7 @@ variable "data_disk_type" {
   type    = string
 }
 variable "dns_domains" {
-  default = ["us-east-1.compute.internal"]
+  default = null
 }
 variable "dns_servers" {
   default = ["169.254.169.253"]

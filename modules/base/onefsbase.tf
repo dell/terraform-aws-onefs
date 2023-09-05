@@ -46,7 +46,7 @@ locals {
     }]
     gateway_ip      = cidrhost(var.external_subnet_cidr_block, var.gateway_hostnum)
     dns_servers     = var.dns_servers
-    dns_domains     = var.dns_domains
+    dns_domains     = var.dns_domains == null ? ["${var.region}.compute.internal"] : var.dns_domains
     network_mask    = cidrnetmask(var.external_subnet_cidr_block)
     security_groups = [var.security_group_external_id]
     subnet          = var.external_subnet_id
