@@ -30,6 +30,7 @@ variable "name" {
 variable "nodes" {
   default     = null
   description = "Number of nodes in the cluster"
+  type        = number
 }
 
 variable "http_tokens" {
@@ -202,7 +203,13 @@ variable "validate_instance_type" {
 variable "validate_volume_type" {
   type        = bool
   default     = null
-  description = "Boolean var to validate volume type"
+  description = "Boolean variable to validate volume type. It is strongly recommended to not update this field for production use."
+}
+
+variable "validate_nodes_count" {
+  type        = bool
+  default     = null
+  description = "Boolean variable to validate nodes count. It is strongly recommended to not update this field for production use."
 }
 
 variable "placement_group_strategy" {

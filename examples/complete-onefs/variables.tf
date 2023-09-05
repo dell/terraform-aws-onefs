@@ -179,3 +179,8 @@ variable "data_disk_size" {
   default     = null
   description = "Size of the volume, if null it takes 16"
 }
+
+variable "validate_nodes_count" {
+  type    = bool
+  default = null
+}

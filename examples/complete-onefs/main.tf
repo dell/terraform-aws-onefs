@@ -69,6 +69,7 @@ module "onefs" {
   resource_tags              = var.resource_tags
   os_disk_type               = var.os_disk_type
   validate_volume_type       = var.validate_volume_type
+  validate_nodes_count       = var.validate_nodes_count
   data_disk_type             = var.data_disk_type
   data_disk_iops             = var.data_disk_iops
   data_disk_throughput       = var.data_disk_throughput
