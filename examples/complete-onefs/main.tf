@@ -28,6 +28,7 @@ module "onefs_iam_resources" {
 }
 
 module "external_security_group" {
+  count               = var.external_sg_id == null ? 1 : 0
   source              = "../../modules/ext-security-group"
   cluster_id          = random_pet.cluster_id.id
   vpc_id              = var.vpc_id
@@ -37,6 +38,7 @@ module "external_security_group" {
 }
 
 module "int-sec-group" {
+  count         = var.internal_sg_id == null ? 1 : 0
   source        = "../../modules/int-security-group"
   resource_tags = var.resource_tags
   id            = random_pet.cluster_id.id
@@ -61,7 +63,7 @@ module "onefs" {
   credentials_hashed         = var.credentials_hashed
   root_passphrase            = var.root_passphrase == null ? var.default_hashed_password : var.root_passphrase
   admin_passphrase           = var.admin_passphrase == null ? var.default_hashed_password : var.admin_passphrase
-  security_group_external_id = module.external_security_group.external_sg_id
+  security_group_external_id = var.external_sg_id == null ? module.external_security_group[0].external_sg_id : var.external_sg_id
   security_group_mgmt_id     = try(var.mgmt_sg_id, null)
   nodes                      = var.nodes
   instance_type              = var.instance_type
@@ -75,5 +77,5 @@ module "onefs" {
   data_disk_size             = var.data_disk_size
   placement_group_strategy   = var.placement_group_strategy
   partition_count            = var.partition_count
-  internal_sg_id             = module.int-sec-group.security_group_id
+  internal_sg_id             = var.internal_sg_id == null ? module.int-sec-group[0].security_group_id : var.internal_sg_id
 }

@@ -41,11 +41,11 @@ terraform output
 
 Response:
 ```textmate
-powerscale_iam_instance_profile_arn = "arn:aws:iam::873989670331:role/873989670331-powerscale-node-runtime-role"
-powerscale_iam_instance_profile_name = "arn:aws:iam::873989670331:role/873989670331-powerscale-node-runtime-role"
+powerscale_iam_instance_profile_arn = "arn:aws:iam::873989670331:instance-profile/873989670331-powerscale-node-runtime-instance-profile"
+powerscale_iam_instance_profile_name = "873989670331-powerscale-node-runtime-instance-profile"
 powerscale_iam_policy_arn = "arn:aws:iam::873989670331:policy/873989670331-powerscale-node-runtime-policy"
 powerscale_iam_role_arn = "arn:aws:iam::873989670331:role/873989670331-powerscale-node-runtime-role"
-powerscale_iam_role_name = "arn:aws:iam::873989670331:role/873989670331-powerscale-node-runtime-role"
+powerscale_iam_role_name = "873989670331-powerscale-node-runtime-role"
 ```
 </details>
 

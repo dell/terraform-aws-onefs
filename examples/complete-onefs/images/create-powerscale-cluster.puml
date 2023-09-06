@@ -11,10 +11,10 @@ collections OneFS
 == Deploy Terraform Modules ==
 Customer -->o Terraform: <b>[Optional]</b> Deploy IAM resources Module
 Terraform -->o  Customer: Wait for terraform apply to complete
-Customer ->o  Terraform: Deploy External Security Group Module
-Terraform ->o  Customer: Wait for terraform apply to complete
-Customer ->o  Terraform: Deploy Internal Security Group Module
-Terraform ->o  Customer: Wait for terraform apply to complete
+Customer -->o  Terraform: Deploy External Security Group Module
+Terraform -->o  Customer: Wait for terraform apply to complete
+Customer -->o  Terraform: Deploy Internal Security Group Module
+Terraform -->o  Customer: Wait for terraform apply to complete
 Customer ->o  Terraform: Deploy OneFS Module
 Terraform ->o  Customer: Wait for terraform apply to complete
 

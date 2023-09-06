@@ -17,13 +17,13 @@ output "powerscale_iam_role_arn" {
 }
 
 output "powerscale_iam_role_name" {
-  value = module.onefs_iam_resources.powerscale_iam_role_arn
+  value = module.onefs_iam_resources.powerscale_iam_role_name
 }
 
 output "powerscale_iam_instance_profile_arn" {
-  value = module.onefs_iam_resources.powerscale_iam_role_arn
+  value = module.onefs_iam_resources.powerscale_iam_instance_profile_arn
 }
 
 output "powerscale_iam_instance_profile_name" {
-  value = module.onefs_iam_resources.powerscale_iam_role_arn
+  value = module.onefs_iam_resources.powerscale_iam_instance_profile_name
 }

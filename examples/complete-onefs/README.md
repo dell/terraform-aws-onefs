@@ -36,6 +36,14 @@ In case, you also have a management subnet, make sure that you update the value 
 
 For using a pre-existing [IAM instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html), provide the name of that IAM instance profile to the `iam_instance_profile` input variable. If not provided, it will deploy the [IAM resources module](../../modules/iam-resources/).
 
+For using a pre-existing External Security Group, provide the security group ID to the `external_sg_id` input variable. If not provided, it will deploy the [External Security Group module](../../modules/ext-security-group/).
+
+For using a pre-existing Internal Security Group, provide the security group ID to the `internal_sg_id` input variable. If not provided, it will deploy the [Internal Security Group module](../../modules/int-security-group/).
+
+> **NOTE**: You can use the same external subnet and external security group for more than one PowerScale cluster as long as there are IP address(es) available to fulfill the requirements of the cluster(s). However, the internal subnet and internal security group that you use should always be specific to each PowerScale cluster.
+
+If you are using the [example modules](../) to create the security groups, make sure you provide the same Cluster Id as obtained from the output of those modules as input to the `cluster_id` input variable.
+
 ### Admin and Root User Password
 
 On using the `default_hashed_password` input parameter, both the root and admin user will be assigned the same password as provided in `default_hashed_password`.
