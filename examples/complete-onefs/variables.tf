@@ -139,11 +139,17 @@ variable "cluster_name" {
 }
 
 variable "external_sg_id" {
-  default = null
+  default     = null
+  description = "The external security group ID"
 }
 
 variable "mgmt_sg_id" {
   default = null
+}
+
+variable "internal_sg_id" {
+  default     = null
+  description = "The internal security group ID"
 }
 
 variable "instance_type" {
