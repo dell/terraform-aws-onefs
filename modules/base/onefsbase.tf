@@ -34,6 +34,7 @@ locals {
   contiguous_ips                  = var.contiguous_ips == null ? false : var.contiguous_ips
   min_cluster_size                = 1
   allowed_instance_types          = ["m5dn.8xlarge", "m5dn.12xlarge", "m5dn.16xlarge", "m5dn.24xlarge", "m5d.24xlarge", "m6idn.8xlarge", "m6idn.12xlarge", "m6idn.16xlarge", "m6idn.24xlarge"]
+  allowed_data_disk_types         = ["gp3", "st1"]
   additional_nodes                = local.nodes - local.min_cluster_size
   gateway_hostnum                 = 1
   external_network_config = {
