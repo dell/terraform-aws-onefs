@@ -65,16 +65,6 @@ variable "contiguous_ips" {
   description = "Assign contiguous IPs to external and (if enabled) management NICs"
 }
 
-variable "gateway_hostnum" {
-  default     = 1
-  description = "The host number of the gateway in a subnet"
-}
-
-variable "smartconnect_hostnum" {
-  default     = 4
-  description = "Only applicable when contiguous_ips is true"
-}
-
 variable "first_external_node_hostnum" {
   default     = 5
   type        = number
@@ -142,11 +132,6 @@ variable "dns_domains" {
   }
 }
 
-variable "smartconnect_zone" {
-  type        = string
-  description = "FQDN to use as the DNS zone for SmartConnect"
-}
-
 variable "timezone" {
   type        = string
   default     = null
@@ -199,13 +184,6 @@ variable "data_disk_throughput" {
   default     = null
   type        = number
   description = "Throughput for EBS volume"
-}
-
-# Deprecated as part of OCM-4282
-variable "linear_journal" {
-  type        = bool
-  default     = null
-  description = "Boolean var to set Linear journal value to true or false"
 }
 
 variable "validate_instance_type" {

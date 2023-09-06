@@ -35,8 +35,8 @@ locals {
   min_cluster_size                = 1
   allowed_instance_types          = ["m5dn.8xlarge", "m5dn.12xlarge", "m5dn.16xlarge", "m5dn.24xlarge", "m5d.24xlarge", "m6idn.8xlarge", "m6idn.12xlarge", "m6idn.16xlarge", "m6idn.24xlarge"]
   additional_nodes                = local.nodes - local.min_cluster_size
+  gateway_hostnum                 = 1
   external_network_config = {
-    smartconnect_zone = var.smartconnect_zone == null ? local.cluster_config.name + ".internal" : var.smartconnect_zone
     ip_address_ranges = local.contiguous_ips ? [{
       "low"  = cidrhost(var.external_subnet_cidr_block, var.first_external_node_hostnum)
       "high" = cidrhost(var.external_subnet_cidr_block, var.first_external_node_hostnum + local.nodes - 1)
@@ -44,7 +44,7 @@ locals {
       "low" : aws_network_interface.external_interface[node_number].private_ip
       "high" : aws_network_interface.external_interface[node_number].private_ip
     }]
-    gateway_ip      = cidrhost(var.external_subnet_cidr_block, var.gateway_hostnum)
+    gateway_ip      = cidrhost(var.external_subnet_cidr_block, local.gateway_hostnum)
     dns_servers     = var.dns_servers
     dns_domains     = var.dns_domains == null ? ["${var.region}.compute.internal"] : var.dns_domains
     network_mask    = cidrnetmask(var.external_subnet_cidr_block)
@@ -68,7 +68,7 @@ locals {
         "low" : aws_network_interface.mgmt_interface[node_number].private_ip
         "high" : aws_network_interface.mgmt_interface[node_number].private_ip
       }]
-      gateway_ip      = cidrhost(var.mgmt_subnet_cidr_block, var.gateway_hostnum)
+      gateway_ip      = cidrhost(var.mgmt_subnet_cidr_block, local.gateway_hostnum)
       network_mask    = cidrnetmask(var.mgmt_subnet_cidr_block)
       security_groups = [var.security_group_mgmt_id]
       subnet          = var.mgmt_subnet_id

@@ -53,7 +53,6 @@ module "onefs" {
   root_password              = var.root_password == null ? var.default_plain_text_password : var.root_password
   availability_zone          = var.availability_zone
   iam_instance_profile       = var.iam_instance_profile == null ? module.onefs_iam_resources[0].powerscale_iam_instance_profile_name : var.iam_instance_profile
-  smartconnect_zone          = "${random_pet.cluster_id.id}.example.com"
   internal_subnet_id         = var.internal_subnet_id
   external_subnet_id         = var.external_subnet_id
   mgmt_subnet_id             = try(var.mgmt_subnet_id, null)
