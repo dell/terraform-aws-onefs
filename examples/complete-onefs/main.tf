@@ -76,6 +76,7 @@ module "onefs" {
   data_disk_iops             = var.data_disk_iops
   data_disk_throughput       = var.data_disk_throughput
   data_disk_size             = var.data_disk_size
+  validate_data_disk_size    = var.validate_data_disk_size
   data_disks_per_node        = var.data_disks_per_node
   validate_data_disks_count  = var.validate_data_disks_count
   placement_group_strategy   = var.placement_group_strategy

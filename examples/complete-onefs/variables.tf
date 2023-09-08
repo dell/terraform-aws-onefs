@@ -185,12 +185,19 @@ variable "validate_volume_type" {
 
 variable "data_disk_size" {
   default     = null
-  description = "Size of the volume, if null it takes 16"
+  type        = number
+  description = "Size of the additional EBS volume"
+}
+
+variable "validate_data_disk_size" {
+  type        = bool
+  default     = null
+  description = "Boolean variable to enable/disable EBS volume size validation"
 }
 
 variable "data_disks_per_node" {
   default     = null
-  description = "Size of the volume, if null it takes 16"
+  description = "Number of EBS volumes per node"
 }
 
 variable "validate_data_disks_count" {
