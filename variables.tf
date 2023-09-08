@@ -12,18 +12,22 @@
 
 variable "region" {
   default     = "us-east-1"
+  type        = string
   description = "AWS default region for creating resources"
 }
 
 variable "iam_instance_profile" {
+  type        = string
   description = "AWS IAM instance profile for attaching to onefs nodes(EC2 VMs)"
 }
 
 variable "id" {
+  type        = string
   description = "Cluster ID, an unique identifier for onefs cluster"
 }
 
 variable "name" {
+  type        = string
   description = "The name of the PowerScale Cluster. Cluster names must begin with a letter and can contain only numbers, letters, and hyphens. If the cluster is joined to an Active Directory domain, the cluster name must be 11 characters or fewer."
 }
 
@@ -35,33 +39,50 @@ variable "nodes" {
 
 variable "http_tokens" {
   default     = null
-  description = "Set http_tokens to Optional or Required to modify instance metadata. Default is Required"
+  type        = string
+  description = "Set http_tokens to \"optional\" or \"required\" to modify instance metadata. Default is \"required\""
+  validation {
+    condition = var.http_tokens == null ? true : contains(
+      ["optional", "required"],
+      var.http_tokens
+    )
+    error_message = join("", [
+      "The value provided for \"http_tokens\" input variable: \"${var.http_tokens}\" is invalid. ",
+      "The allowed values are: \"optional\", \"required\"."
+    ])
+  }
 }
 
 variable "availability_zone" {
+  type        = string
   description = "Availabity zone to create onefs cluster and its resources"
 }
 
 variable "internal_subnet_id" {
+  type        = string
   description = "ID of internal subnet, internal subnet should be reserved exclusively for use by a single OneFS and must contain enough free IP addresses to assign 1 IP for each instance in the cluster"
 }
 
 variable "external_subnet_id" {
+  type        = string
   description = "ID of external subnet, external subnet must have at least 1 free IP address for each node in the OneFS deployment being planned. This subnet can be shared with other clients"
 }
 
 variable "enable_mgmt" {
   default     = null
+  type        = bool
   description = "Boolean variable, if true management subnet is created for cluster"
 }
 
 variable "mgmt_subnet_id" {
   default     = null
+  type        = string
   description = "ID of management subnet, this is required if enable_mgmt is true"
 }
 
 variable "contiguous_ips" {
   default     = false
+  type        = bool
   description = "Assign contiguous IPs to external and (if enabled) management NICs"
 }
 
@@ -78,16 +99,19 @@ variable "first_internal_node_hostnum" {
 }
 
 variable "security_group_external_id" {
+  type        = string
   description = "ID of external security group, required to apply to the external interfaces in the cluster"
 }
 
 variable "security_group_mgmt_id" {
   default     = null
+  type        = string
   description = "ID of management security group, required to apply to the management interfaces in the cluster"
 }
 
 variable "first_mgmt_node_hostnum" {
   default     = 5
+  type        = number
   description = "Only applicable when contiguous_ips is true"
 }
 
@@ -99,16 +123,19 @@ variable "credentials_hashed" {
 
 variable "root_password" {
   sensitive   = true
+  type        = string
   description = "The root password for the OneFS cluster"
 }
 
 variable "admin_password" {
   sensitive   = true
+  type        = string
   description = "The admin password for the OneFS cluster"
 }
 
 variable "image_id" {
   default     = null
+  type        = string
   description = "AMI ID for creating OneFS cluster nodes"
 }
 
@@ -171,7 +198,16 @@ variable "data_disk_size" {
 
 variable "data_disks_per_node" {
   default     = null
+  type        = number
   description = "Number of EBS voulmes per node"
+}
+
+variable "validate_data_disks_count" {
+  default     = null
+  description = <<EOT
+    Boolean variable to enable/disable validation of
+    the number of data disks which are attached to each node  
+  EOT
 }
 
 variable "data_disk_iops" {
@@ -218,6 +254,7 @@ variable "validate_placement_group_strategy" {
 
 variable "partition_count" {
   default     = null
+  type        = number
   description = "The number of partitions to create in the placement group. Can only be specified when the placement_group_strategy is set to partition. Valid values are 1 - 7"
 }
 
@@ -225,6 +262,7 @@ variable "partition_count" {
 #  INTERNAL Networking Inteface Security Group & Rules
 #
 variable "internal_sg_id" {
+  type        = string
   description = "Security group ID to be attached to the internal network interfaces"
 }
 

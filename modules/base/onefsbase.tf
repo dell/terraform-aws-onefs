@@ -31,14 +31,22 @@ locals {
   validate_volume_type               = var.validate_volume_type == null ? true : var.validate_volume_type
   validate_nodes_count               = var.validate_nodes_count == null ? true : var.validate_nodes_count
   data_disks_per_node                = var.data_disks_per_node == null ? 5 : var.data_disks_per_node
+  validate_data_disks_count          = var.validate_data_disks_count == null ? true : var.validate_data_disks_count
   instance_type                      = var.instance_type == null ? local.allowed_instance_types[0] : var.instance_type
   data_disk_size                     = var.data_disk_size == null ? 16 : var.data_disk_size
   contiguous_ips                     = var.contiguous_ips == null ? false : var.contiguous_ips
   min_cluster_size                   = 1
   allowed_instance_types             = ["m5dn.8xlarge", "m5dn.12xlarge", "m5dn.16xlarge", "m5dn.24xlarge", "m5d.24xlarge", "m6idn.8xlarge", "m6idn.12xlarge", "m6idn.16xlarge", "m6idn.24xlarge"]
-  allowed_data_disk_types            = ["gp3", "st1"]
-  additional_nodes                   = local.nodes - local.min_cluster_size
-  gateway_hostnum                    = 1
+  allowed_data_disk_types = {
+    gp3 = "gp3"
+    st1 = "st1"
+  }
+  allowed_data_disks_count_map = {
+    gp3 = [5, 6, 10, 12, 15, 18, 20]
+    st1 = [5, 6]
+  }
+  additional_nodes = local.nodes - local.min_cluster_size
+  gateway_hostnum  = 1
   external_network_config = {
     ip_address_ranges = local.contiguous_ips ? [{
       "low"  = cidrhost(var.external_subnet_cidr_block, var.first_external_node_hostnum)
@@ -92,18 +100,19 @@ locals {
     # Don't alter this format without first consulting these links:
     # https://github.com/hashicorp/terraform/issues/17173
     # https://github.com/hashicorp/terraform-provider-external/issues/4
-    hashed_admin_password  = var.hashed_admin_password
-    hashed_root_password   = var.hashed_root_password
-    timezone               = var.timezone == null ? "Greenwich Mean Time" : var.timezone
-    os_disk_type           = local.os_disk_type
-    data_disks_per_node    = local.data_disks_per_node
-    data_disk_size         = local.data_disk_size
-    data_disk_type         = local.data_disk_type
-    data_disk_iops         = var.data_disk_iops
-    data_disk_throughput   = var.data_disk_throughput
-    validate_instance_type = local.validate_instance_type
-    validate_volume_type   = local.validate_volume_type
-    validate_nodes_count   = local.validate_nodes_count
+    hashed_admin_password     = var.hashed_admin_password
+    hashed_root_password      = var.hashed_root_password
+    timezone                  = var.timezone == null ? "Greenwich Mean Time" : var.timezone
+    os_disk_type              = local.os_disk_type
+    data_disks_per_node       = local.data_disks_per_node
+    data_disk_size            = local.data_disk_size
+    data_disk_type            = local.data_disk_type
+    data_disk_iops            = var.data_disk_iops
+    data_disk_throughput      = var.data_disk_throughput
+    validate_instance_type    = local.validate_instance_type
+    validate_volume_type      = local.validate_volume_type
+    validate_nodes_count      = local.validate_nodes_count
+    validate_data_disks_count = local.validate_data_disks_count
   }
   node_configs = {
     for node_number in range(local.nodes) : node_number => {
@@ -326,18 +335,38 @@ resource "aws_instance" "onefs_node" {
   }
   lifecycle {
     precondition {
+      condition = local.cluster_config.validate_volume_type ? contains(
+        values(local.allowed_data_disk_types),
+        local.cluster_config.data_disk_type
+      ) : true
+      error_message = join("", [
+        "AWS volume type provided \"${local.cluster_config.data_disk_type}\" for \"data_disk_type\" ",
+        "variable is invalid. Allowed values for EBS volume type are: ${join(", ", values(local.allowed_data_disk_types))}. ",
+        "Disable volume type validation by setting \"validate_volume_type\" to false."
+      ])
+    }
+    precondition {
+      condition = local.cluster_config.validate_data_disks_count ? (
+        local.cluster_config.data_disk_type == local.allowed_data_disk_types.gp3 ? contains(
+          local.allowed_data_disks_count_map.gp3, local.cluster_config.data_disks_per_node
+          ) : local.cluster_config.data_disk_type == local.allowed_data_disk_types.st1 ? contains(
+          local.allowed_data_disks_count_map.st1, local.cluster_config.data_disks_per_node
+        ) : true
+      ) : true
+      error_message = join("", [
+        "Number of EBS volumes requested to be attached to each OneFS Node: \"${local.cluster_config.data_disks_per_node}\" ",
+        "of volume type: \"${local.cluster_config.data_disk_type}\" for variable \"data_disks_per_node\" is invalid. ",
+        "Allowed number of EBS volumes to be attached to each OneFS Node are:\n",
+        "${jsonencode(local.allowed_data_disks_count_map)}\n",
+        "Disable EBS volumes per node count validation by setting \"validate_data_disks_count\" to false."
+      ])
+    }
+    precondition {
       condition = local.cluster_config.validate_instance_type ? contains(
         local.allowed_instance_types,
         local.cluster_config.instance_type
       ) : true
       error_message = "EC2 Instance type provided \"${local.cluster_config.instance_type}\" for \"instance_type\" variable is invalid. Allowed Instance types for OneFS nodes are ${join(", ", local.allowed_instance_types)}. Disable Instance type validation by setting \"validate_instance_type\" to false."
-    }
-    precondition {
-      condition = local.cluster_config.validate_volume_type ? contains(
-        ["gp3"],
-        local.cluster_config.data_disk_type
-      ) : true
-      error_message = "AWS volume type provided \"${local.cluster_config.data_disk_type}\" for \"data_disk_type\" variable is invalid. Disable volume type validation by setting \"validate_volume_type\" to false."
     }
     precondition {
       condition     = local.cluster_config.validate_nodes_count ? (var.nodes >= 4 && var.nodes <= 6) : true

@@ -156,6 +156,12 @@ variable "instance_type" {
   default = null
 }
 
+variable "validate_instance_type" {
+  type        = bool
+  default     = null
+  description = "Boolean variable to validate EC2 instance type"
+}
+
 variable "availability_zone" {
   default = "us-east-1b"
 }
@@ -185,6 +191,10 @@ variable "data_disk_size" {
 variable "data_disks_per_node" {
   default     = null
   description = "Size of the volume, if null it takes 16"
+}
+
+variable "validate_data_disks_count" {
+  default = null
 }
 
 variable "validate_nodes_count" {

@@ -71,11 +71,13 @@ module "onefs" {
   os_disk_type               = var.os_disk_type
   validate_volume_type       = var.validate_volume_type
   validate_nodes_count       = var.validate_nodes_count
+  validate_instance_type     = var.validate_instance_type
   data_disk_type             = var.data_disk_type
   data_disk_iops             = var.data_disk_iops
   data_disk_throughput       = var.data_disk_throughput
   data_disk_size             = var.data_disk_size
   data_disks_per_node        = var.data_disks_per_node
+  validate_data_disks_count  = var.validate_data_disks_count
   placement_group_strategy   = var.placement_group_strategy
   partition_count            = var.partition_count
   internal_sg_id             = var.internal_sg_id == null ? module.int-sec-group[0].security_group_id : var.internal_sg_id
