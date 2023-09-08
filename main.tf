@@ -76,6 +76,6 @@ module "onefsbase" {
   # Don't alter this format without first consulting these links:
   # https://github.com/hashicorp/terraform/issues/17173
   # https://github.com/hashicorp/terraform-provider-external/issues/4
-  hashed_admin_password = var.admin_passphrase
-  hashed_root_password  = var.root_passphrase
+  hashed_admin_password = var.hashed_admin_passphrase
+  hashed_root_password  = var.hashed_root_passphrase
 }

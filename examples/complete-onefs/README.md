@@ -48,7 +48,7 @@ If you are using the [example modules](../) to create the security groups, make 
 
 On using the `default_hashed_password` input parameter, both the root and admin user will be assigned the same password as provided in `default_hashed_password`.
 
-You can pass separate passwords for the root and admin user using `root_passphrase` and `admin_passphrase` respectively.
+You can pass separate passwords for the root and admin user using `hashed_root_passphrase` and `hashed_admin_passphrase` respectively.
 
 To get the hashed password you can use [openssl-passwd](https://www.openssl.org/docs/man3.0/man1/openssl-passwd.html#:~:text=DESCRIPTION,or%20from%20the%20terminal%20otherwise.) utility.
 
