@@ -75,6 +75,7 @@ module "onefs" {
   data_disk_iops             = var.data_disk_iops
   data_disk_throughput       = var.data_disk_throughput
   data_disk_size             = var.data_disk_size
+  data_disks_per_node        = var.data_disks_per_node
   placement_group_strategy   = var.placement_group_strategy
   partition_count            = var.partition_count
   internal_sg_id             = var.internal_sg_id == null ? module.int-sec-group[0].security_group_id : var.internal_sg_id
