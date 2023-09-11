@@ -222,12 +222,14 @@ variable "internal_sg_id" {
 }
 
 variable "hashed_root_passphrase" {
+  sensitive   = true
   type        = string
   default     = null
   description = "hashed root passphrase to create the onefs cluster"
 }
 
 variable "hashed_admin_passphrase" {
+  sensitive   = true
   type        = string
   default     = null
   description = "hashed admin passphrase to create the onefs cluster"
