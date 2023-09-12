@@ -206,7 +206,14 @@ variable "validate_nodes_count" {
 
 variable "placement_group_strategy" {
   default     = null
+  type        = string
   description = "The placement strategy for aws placement group. Can be cluster, partition or spread. If left null value will be spread"
+}
+
+variable "validate_placement_group_strategy" {
+  type        = bool
+  default     = null
+  description = "Boolean variable to enable/disable validation of EC2 placement group strategy."
 }
 
 variable "partition_count" {
