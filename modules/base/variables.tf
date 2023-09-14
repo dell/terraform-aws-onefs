@@ -29,6 +29,11 @@ variable "data_disk_size" {
 variable "data_disks_per_node" {
   default = null
 }
+
+variable "validate_data_disks_count" {
+  default = null
+}
+
 variable "data_disk_throughput" {
   default = null
 }
