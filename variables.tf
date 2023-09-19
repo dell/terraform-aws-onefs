@@ -181,6 +181,7 @@ variable "instance_type" {
 variable "os_disk_type" {
   default     = null
   description = "Disk type of root block device, if null it takes gp3"
+  type        = string
 }
 
 # Input validation for this variable is done as precondition
@@ -226,6 +227,12 @@ variable "validate_instance_type" {
   type        = bool
   default     = null
   description = "Boolean variable to validate EC2 instance type"
+}
+
+variable "validate_os_disk_type" {
+  type        = bool
+  default     = null
+  description = "Boolean variable to validate OS Disk type"
 }
 
 variable "validate_volume_type" {

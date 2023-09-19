@@ -128,6 +128,11 @@ variable "validate_instance_type" {
   default = null
 }
 
+variable "validate_os_disk_type" {
+  type    = bool
+  default = null
+}
+
 variable "validate_volume_type" {
   type    = bool
   default = null

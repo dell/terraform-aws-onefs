@@ -68,6 +68,7 @@ module "onefsbase" {
   security_group_external_id        = var.security_group_external_id
   security_group_mgmt_id            = var.security_group_mgmt_id
   timezone                          = var.timezone
+  validate_os_disk_type             = var.validate_os_disk_type
   validate_instance_type            = var.validate_instance_type
   validate_volume_type              = var.validate_volume_type
   validate_nodes_count              = var.validate_nodes_count

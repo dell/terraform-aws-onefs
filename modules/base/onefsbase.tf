@@ -26,7 +26,8 @@ locals {
   pg_partition_default_partitions    = 7
   partition_count                    = var.partition_count == null ? (local.placement_group_strategy == "partition" ? local.pg_partition_default_partitions : 0) : var.partition_count
   data_disk_type                     = var.data_disk_type == null ? "gp3" : var.data_disk_type
-  os_disk_type                       = var.os_disk_type == null ? "gp3" : var.os_disk_type
+  os_disk_type                       = var.os_disk_type == null ? local.allowed_os_disk_types.gp3 : var.os_disk_type
+  validate_os_disk_type              = var.validate_os_disk_type == null ? true : var.validate_os_disk_type
   validate_instance_type             = var.validate_instance_type == null ? true : var.validate_instance_type
   validate_volume_type               = var.validate_volume_type == null ? true : var.validate_volume_type
   validate_nodes_count               = var.validate_nodes_count == null ? true : var.validate_nodes_count
@@ -37,6 +38,7 @@ locals {
   contiguous_ips                     = var.contiguous_ips == null ? false : var.contiguous_ips
   min_cluster_size                   = 1
   allowed_instance_types             = ["m5dn.8xlarge", "m5dn.12xlarge", "m5dn.16xlarge", "m5dn.24xlarge", "m5d.24xlarge", "m6idn.8xlarge", "m6idn.12xlarge", "m6idn.16xlarge", "m6idn.24xlarge"]
+  allowed_os_disk_types              = { gp3 = "gp3" }
   allowed_data_disk_types = {
     gp3 = "gp3"
     st1 = "st1"
@@ -110,6 +112,7 @@ locals {
     data_disk_iops            = var.data_disk_iops
     data_disk_throughput      = var.data_disk_throughput
     validate_instance_type    = local.validate_instance_type
+    validate_os_disk_type     = local.validate_os_disk_type
     validate_volume_type      = local.validate_volume_type
     validate_nodes_count      = local.validate_nodes_count
     validate_data_disks_count = local.validate_data_disks_count
@@ -371,6 +374,13 @@ resource "aws_instance" "onefs_node" {
     precondition {
       condition     = local.cluster_config.validate_nodes_count ? (var.nodes >= 4 && var.nodes <= 6) : true
       error_message = "Number of nodes specified: \"${local.nodes}\" doesn't fall in the valid range for number of nodes, i.e. 4-6. Disable nodes` count validation by setting \"validate_nodes_count\" to false."
+    }
+    precondition {
+      condition = local.cluster_config.validate_os_disk_type ? contains(
+        values(local.allowed_os_disk_types),
+        local.cluster_config.os_disk_type
+      ) : true
+      error_message = "OS Disk type provided \"${local.cluster_config.os_disk_type}\" for \"os_disk_type\" variable is invalid. Allowed OS Disk Types for OneFS nodes are \"${join(", ", values(local.allowed_os_disk_types))}\". Disable OS Disk Type validation by setting \"validate_os_disk_type\" to false."
     }
     ignore_changes = [
       user_data,
