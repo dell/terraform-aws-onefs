@@ -38,7 +38,7 @@ variable "nodes" {
 }
 
 variable "http_tokens" {
-  default     = null
+  default     = "required"
   type        = string
   description = "Set http_tokens to \"optional\" or \"required\" to modify instance metadata. Default is \"required\""
   validation {
