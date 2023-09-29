@@ -18,25 +18,39 @@ locals {
 }
 
 locals {
-  nodes                              = var.nodes == null ? 4 : var.nodes
-  pg_spread_max_instances            = 7
-  placement_group_strategy           = var.placement_group_strategy == null ? local.allowed_placement_group_strategies[0] : var.placement_group_strategy
-  validate_placement_group_strategy  = var.validate_placement_group_strategy == null ? true : var.validate_placement_group_strategy
+  pg_spread_max_instances           = 7
+  pg_partition_default_partitions   = 7
+  gateway_hostnum                   = 1
+  min_cluster_size                  = 1
+  default_allowed_data_disk_size    = 16
+  default_allowed_data_disks_count  = 5
+  nodes                             = var.nodes == null ? 4 : var.nodes
+  placement_group_strategy          = var.placement_group_strategy == null ? local.allowed_placement_group_strategies[0] : var.placement_group_strategy
+  partition_count                   = var.partition_count == null ? (local.placement_group_strategy == "partition" ? local.pg_partition_default_partitions : 0) : var.partition_count
+  contiguous_ips                    = var.contiguous_ips == null ? false : var.contiguous_ips
+  additional_nodes                  = local.nodes - local.min_cluster_size
+  data_disk_type                    = var.data_disk_type == null ? local.allowed_data_disk_types.gp3 : var.data_disk_type
+  instance_type                     = var.instance_type == null ? local.allowed_instance_types[0] : var.instance_type
+  os_disk_type                      = var.os_disk_type == null ? local.allowed_os_disk_types.gp3 : var.os_disk_type
+  validate_os_disk_type             = var.validate_os_disk_type == null ? true : var.validate_os_disk_type
+  validate_instance_type            = var.validate_instance_type == null ? true : var.validate_instance_type
+  validate_volume_type              = var.validate_volume_type == null ? true : var.validate_volume_type
+  validate_nodes_count              = var.validate_nodes_count == null ? true : var.validate_nodes_count
+  validate_data_disk_size           = var.validate_data_disk_size == null ? true : var.validate_data_disk_size
+  validate_data_disks_count         = var.validate_data_disks_count == null ? true : var.validate_data_disks_count
+  validate_placement_group_strategy = var.validate_placement_group_strategy == null ? true : var.validate_placement_group_strategy
+
+  data_disks_per_node = var.data_disks_per_node == null ? (contains(values(local.allowed_data_disk_types), local.data_disk_type) ?
+    local.allowed_data_disks_count_map[local.data_disk_type][0] :
+  local.default_allowed_data_disks_count) : var.data_disks_per_node
+
+  data_disk_size = var.data_disk_size == null ? (contains(values(local.allowed_data_disk_types), local.data_disk_type) ?
+    (can(local.allowed_data_disk_sizes[local.data_disk_type].min) ?
+      local.allowed_data_disk_sizes[local.data_disk_type].min :
+    local.allowed_data_disk_sizes[local.data_disk_type][0]) :
+  local.default_allowed_data_disk_size) : var.data_disk_size
+
   allowed_placement_group_strategies = ["spread"]
-  pg_partition_default_partitions    = 7
-  partition_count                    = var.partition_count == null ? (local.placement_group_strategy == "partition" ? local.pg_partition_default_partitions : 0) : var.partition_count
-  data_disk_type                     = var.data_disk_type == null ? "gp3" : var.data_disk_type
-  os_disk_type                       = var.os_disk_type == null ? local.allowed_os_disk_types.gp3 : var.os_disk_type
-  validate_os_disk_type              = var.validate_os_disk_type == null ? true : var.validate_os_disk_type
-  validate_instance_type             = var.validate_instance_type == null ? true : var.validate_instance_type
-  validate_volume_type               = var.validate_volume_type == null ? true : var.validate_volume_type
-  validate_nodes_count               = var.validate_nodes_count == null ? true : var.validate_nodes_count
-  data_disks_per_node                = var.data_disks_per_node == null ? 5 : var.data_disks_per_node
-  validate_data_disks_count          = var.validate_data_disks_count == null ? true : var.validate_data_disks_count
-  instance_type                      = var.instance_type == null ? local.allowed_instance_types[0] : var.instance_type
-  data_disk_size                     = var.data_disk_size == null ? 16 : var.data_disk_size
-  contiguous_ips                     = var.contiguous_ips == null ? false : var.contiguous_ips
-  min_cluster_size                   = 1
   allowed_instance_types             = ["m5dn.8xlarge", "m5dn.12xlarge", "m5dn.16xlarge", "m5dn.24xlarge", "m5d.24xlarge", "m6idn.8xlarge", "m6idn.12xlarge", "m6idn.16xlarge", "m6idn.24xlarge"]
   allowed_os_disk_types              = { gp3 = "gp3" }
   allowed_data_disk_types = {
@@ -47,8 +61,14 @@ locals {
     gp3 = [5, 6, 10, 12, 15, 18, 20]
     st1 = [5, 6]
   }
-  additional_nodes = local.nodes - local.min_cluster_size
-  gateway_hostnum  = 1
+  # allowed_data_disk_sizes can have either a list of values or a map with min & max parameters
+  allowed_data_disk_sizes = {
+    gp3 = {
+      min = 1024
+      max = 16384
+    }
+    st1 = [4096, 10240]
+  }
   external_network_config = {
     ip_address_ranges = local.contiguous_ips ? [{
       "low"  = cidrhost(var.external_subnet_cidr_block, var.first_external_node_hostnum)
@@ -116,6 +136,7 @@ locals {
     validate_volume_type      = local.validate_volume_type
     validate_nodes_count      = local.validate_nodes_count
     validate_data_disks_count = local.validate_data_disks_count
+    validate_data_disk_size   = local.validate_data_disk_size
   }
   node_configs = {
     for node_number in range(local.nodes) : node_number => {
@@ -362,6 +383,23 @@ resource "aws_instance" "onefs_node" {
         "Allowed number of EBS volumes to be attached to each OneFS Node are:\n",
         "${jsonencode(local.allowed_data_disks_count_map)}\n",
         "Disable EBS volumes per node count validation by setting \"validate_data_disks_count\" to false."
+      ])
+    }
+    precondition {
+      condition = local.cluster_config.validate_data_disk_size ? (
+        local.cluster_config.data_disk_type == local.allowed_data_disk_types.gp3 ?
+        tonumber(local.cluster_config.data_disk_size) >= tonumber(local.allowed_data_disk_sizes.gp3.min) &&
+        tonumber(local.cluster_config.data_disk_size) <= tonumber(local.allowed_data_disk_sizes.gp3.max) :
+        local.cluster_config.data_disk_type == local.allowed_data_disk_types.st1 ? contains(
+          local.allowed_data_disk_sizes.st1, local.cluster_config.data_disk_size
+        ) : true
+      ) : true
+      error_message = join("", [
+        "AWS volume size provided: \"${local.cluster_config.data_disk_size}\" GiBs ",
+        "of data_disk_type: \"${local.cluster_config.data_disk_type}\" for variable \"data_disk_size\" is invalid. ",
+        "Allowed volume sizes for data_disk_size variable for data_disk_type:\n",
+        "${jsonencode(local.allowed_data_disk_sizes)}\n",
+        "Disable volume size validation by setting \"validate_data_disk_size\" to false."
       ])
     }
     precondition {

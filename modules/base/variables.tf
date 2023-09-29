@@ -24,6 +24,11 @@ variable "data_disk_iops" {
   default = null
 }
 variable "data_disk_size" {
+  type    = number
+  default = null
+}
+variable "validate_data_disk_size" {
+  type    = bool
   default = null
 }
 variable "data_disks_per_node" {

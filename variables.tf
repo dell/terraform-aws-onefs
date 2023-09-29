@@ -162,7 +162,7 @@ variable "dns_domains" {
 variable "timezone" {
   type        = string
   default     = null
-  description = "Time zone for creating OneFS cluster resources in AWS"
+  description = "Time zone of the OneFS cluster"
 }
 
 variable "resource_tags" {
@@ -193,14 +193,19 @@ variable "data_disk_type" {
 }
 
 variable "data_disk_size" {
+  type        = number
   default     = null
-  description = "Size of the volume, if null it takes 16"
+  description = "Size of the additional EBS volume"
 }
-
+variable "validate_data_disk_size" {
+  type        = bool
+  default     = null
+  description = "Boolean variable to enable/disable EBS volume size validation"
+}
 variable "data_disks_per_node" {
   default     = null
   type        = number
-  description = "Number of EBS voulmes per node"
+  description = "Number of EBS volumes per node"
 }
 
 variable "validate_data_disks_count" {
