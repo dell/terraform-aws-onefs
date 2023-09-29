@@ -128,3 +128,10 @@ Once this module is deployed, wait for the first OneFS node to boot up in the Po
 ## Post Deploy Steps
 
 To perform the post deploy steps necessary to complete the cluster creation process, follow the steps mentioned in this [document](./POST_DEPLOY_STEPS.md).
+
+## Persistence of State
+
+By default, the terraform module is configured to use the [local](https://developer.hashicorp.com/terraform/language/settings/backends/local) directory of the respective modules for its state persistence. Hence, the [terraform state](https://developer.hashicorp.com/terraform/language/state) will be stored as files in the respective modules` directories.
+In order to use any of the other available state persistence options provided by terraform, you need to add a [backend block](https://developer.hashicorp.com/terraform/language/settings/backends/configuration#using-a-backend-block) to the respective module's main.tf with the details of the respective backend configuration that you would like to use.
+> **NOTE**: It's strongly recommended that if you are changing the backend configuration, update that in the terraform configuration file from where you are calling this module.
+For more information on the available backend store options provided by terraform [click here](https://developer.hashicorp.com/terraform/language/settings/backends/configuration#available-backends).
