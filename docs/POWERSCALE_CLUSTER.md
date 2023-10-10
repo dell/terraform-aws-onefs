@@ -32,7 +32,7 @@ To deploy a PowerScale cluster you can use this module to create all the depende
 
 ```hcl
 module "onefs" {
-  source = "git@github.west.isilon.com:PowerScaleCloud/terraform-aws-onefs.git"
+  source = "dell/onefs/aws"
 
   id                         = "####"
   name                       = "####"

@@ -21,7 +21,7 @@ locals {
 }
 
 module "external_security_group" {
-  source              = "../../modules/ext-security-group"
+  source              = "dell/onefs/aws//modules/ext-security-group"
   cluster_id          = var.cluster_id == null ? random_pet.cluster_id.id : var.cluster_id
   vpc_id              = var.vpc_id
   resource_tags       = var.resource_tags

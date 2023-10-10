@@ -25,7 +25,7 @@ To ensure that the nodes which are part of a particular PowerScale cluster have 
 
 ```hcl
 module "onefs_iam_resources" {
-    source = "git@github.west.isilon.com:PowerScaleCloud/terraform-aws-onefs.git//modules/iam-resources"
+    source = "dell/onefs/aws//modules/iam-resources"
     regions = ["us-east-1", "us-east-2", ...]
 }
 ```
@@ -36,18 +36,7 @@ You can find the details of the security group and the rules attached to it in t
 
 The module takes the following input parameters:
 
-* `source`: Use this parameter to specify the URL of this module. The double slash (`//`) is intentional 
-  and required. Terraform uses it to specify subfolders within a Git repo (see [module 
-  sources](https://www.terraform.io/docs/modules/sources.html)). 
-  
-  You can also use the `ref` parameter which specifies a specific Git tag in 
-  this repo. That way, instead of using the latest version of this module from the `main` branch, which 
-  will change every time you run Terraform, you're using a fixed version of the repo.
-  
-  *Eg.*: `"git@github.west.isilon.com:PowerScaleCloud/terraform-aws-onefs.git//modules/iam-resources?ref=v0.0.1"`
-
-  **NOTE**: Here `v0.0.1` needs to be a valid [tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) assigned with a particular Git commit.
-
+* `source`: Use this parameter to specify the URL of this module. The double slash (`//`) is intentional and required for specifying a submodule. 
 
 * `regions`: A comma separated list of the [AWS regions](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) where PowerScale cluster(s) are going to be deployed. To allow all regions, provide ["*"].
   
