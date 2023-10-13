@@ -13,7 +13,7 @@ resource "random_pet" "cluster_id" {
 }
 
 module "int-sec-group" {
-  source        = "dell/onefs/aws//modules/int-security-group"
+  source        = "../../modules/int-security-group"
   resource_tags = var.resource_tags
   id            = var.cluster_id == null ? random_pet.cluster_id.id : var.cluster_id
   network_id    = var.vpc_id

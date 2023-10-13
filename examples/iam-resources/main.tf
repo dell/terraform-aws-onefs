@@ -9,5 +9,5 @@
 */
 
 module "onefs_iam_resources" {
-  source = "dell/onefs/aws//modules/iam-resources"
+  source = "../../modules/iam-resources"
 }

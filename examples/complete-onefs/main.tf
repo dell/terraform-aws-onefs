@@ -23,13 +23,13 @@ PowerScale clusters
 */
 module "onefs_iam_resources" {
   count   = var.iam_instance_profile == null ? 1 : 0
-  source  = "dell/onefs/aws//modules/iam-resources"
+  source  = "../../modules/iam-resources"
   regions = [var.region] # Specify list of AWS regions where you will deploy your PowerScale clusters
 }
 
 module "external_security_group" {
   count               = var.external_sg_id == null ? 1 : 0
-  source              = "dell/onefs/aws//modules/ext-security-group"
+  source              = "../../modules/ext-security-group"
   cluster_id          = random_pet.cluster_id.id
   vpc_id              = var.vpc_id
   resource_tags       = var.resource_tags
@@ -39,14 +39,14 @@ module "external_security_group" {
 
 module "int-sec-group" {
   count         = var.internal_sg_id == null ? 1 : 0
-  source        = "dell/onefs/aws//modules/int-security-group"
+  source        = "../../modules/int-security-group"
   resource_tags = var.resource_tags
   id            = random_pet.cluster_id.id
   network_id    = var.vpc_id
 }
 
 module "onefs" {
-  source = "dell/onefs/aws"
+  source = "../.."
 
   id                         = var.cluster_id == null ? random_pet.cluster_id.id : var.cluster_id
   name                       = var.cluster_name == null ? random_pet.cluster_id.id : var.cluster_id
