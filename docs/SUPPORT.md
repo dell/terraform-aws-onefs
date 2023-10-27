@@ -9,6 +9,5 @@
 -->
 # Support
 
-You can interact with us on [GitHub](https://github.west.isilon.com/PowerScaleCloud/terraform-aws-onefs) by creating a [GitHub Issue](https://github.west.isilon.com/PowerScaleCloud/terraform-aws-onefs/issues).
-
-You can also reach out to the Terraform module for Dell maintainers at <replace-DL-here-once-available>.
+You can interact with us on [GitHub](https://github.com/dell/terraform-aws-onefs) by creating a
+[GitHub Issue](https://github.com/dell/terraform-aws-onefs/issues).
