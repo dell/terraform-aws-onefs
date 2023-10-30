@@ -212,6 +212,9 @@ resource "aws_placement_group" "onefs_placement_group" {
   strategy = local.placement_group_strategy
   tags = merge(
     local.resource_tags,
+    {
+      Name = "${var.id}-onefs-placement-group"
+    }
   )
 
   partition_count = local.partition_count
