@@ -213,7 +213,7 @@ resource "aws_placement_group" "onefs_placement_group" {
   tags = merge(
     local.resource_tags,
     {
-      Name = "${var.id}-placement-group"
+      Name = "${var.id}-onefs-placement-group"
     }
   )
 
