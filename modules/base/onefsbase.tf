@@ -210,7 +210,9 @@ resource "aws_network_interface" "mgmt_interface" {
 resource "aws_placement_group" "onefs_placement_group" {
   name     = "${var.id}-onefs-placement-group"
   strategy = local.placement_group_strategy
-  tags = local.resource_tags
+  tags = merge(
+    local.resource_tags,
+  )
 
   partition_count = local.partition_count
 
