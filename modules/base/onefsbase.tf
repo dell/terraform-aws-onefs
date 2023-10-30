@@ -173,7 +173,12 @@ resource "aws_network_interface" "external_interface" {
   private_ips       = local.contiguous_ips ? [cidrhost(var.external_subnet_cidr_block, count.index + var.first_external_node_hostnum)] : null
   private_ips_count = local.contiguous_ips ? null : (count.index == 0 ? 1 : 0)
 
-  tags = local.resource_tags
+  tags = merge(
+    local.resource_tags,
+    {
+      Name = "${var.id}-nic-ext-${count.index}"
+    }
+  )
 
   lifecycle {
     ignore_changes = [
@@ -205,9 +210,7 @@ resource "aws_network_interface" "mgmt_interface" {
 resource "aws_placement_group" "onefs_placement_group" {
   name     = "${var.id}-onefs-placement-group"
   strategy = local.placement_group_strategy
-  tags = merge(
-    local.resource_tags,
-  )
+  tags = local.resource_tags
 
   partition_count = local.partition_count
 
