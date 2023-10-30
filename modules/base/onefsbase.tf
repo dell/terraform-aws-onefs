@@ -173,12 +173,7 @@ resource "aws_network_interface" "external_interface" {
   private_ips       = local.contiguous_ips ? [cidrhost(var.external_subnet_cidr_block, count.index + var.first_external_node_hostnum)] : null
   private_ips_count = local.contiguous_ips ? null : (count.index == 0 ? 1 : 0)
 
-  tags = merge(
-    local.resource_tags,
-    {
-      Name = "${var.id}-nic-ext-${count.index}"
-    }
-  )
+  tags = local.resource_tags
 
   lifecycle {
     ignore_changes = [
