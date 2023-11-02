@@ -17,7 +17,8 @@ output "external_ip_addresses" {
 }
 
 output "root_password" {
-  value = module.onefsbase.root_password
+  value     = module.onefsbase.root_password
+  sensitive = true
 }
 
 output "internal_ip_addresses" {
