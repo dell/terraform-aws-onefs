@@ -193,14 +193,6 @@ isi auth user list
 
 > **NOTE**: This command may fail in a variety of ways as the cluster is booting please wait X minutes before contacting support.
 
-### Wait for additional nodes to boot
-
-Finally, check the list of nodes ready to join until all serial numbers in the machineid.json appear as available
-
-```shell
-isi devices node list
-```
-
 ### Update cluster internal networks configuration
 
 We need to ensure that the range of the internal network interface's private ip addresses range(as obtained [above](#get-details-of-deployed-onefs-module)) is correctly configured in the cluster's `internal-networks`.
@@ -243,7 +235,7 @@ Failover IP Addresses: -
 ```
 </details>
 
-If the IP address range of the internal network interface is not covered by the currently configured IP range, we need to update the IP addresses of the internal network interface attached to the OneFS nodes, as noted [above](#internal-network-interface-ip-addresses). <br>
+If the IP address range of the internal network interface is not covered by the currently configured IP range, we need to update the IP addresses of the internal network interface attached to the OneFS nodes, as noted [above](#get-details-of-deployed-onefs-module). <br>
 
 Use the following command to update internal-networks IP address range:
 

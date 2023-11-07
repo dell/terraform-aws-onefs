@@ -125,12 +125,14 @@ variable "root_password" {
   sensitive   = true
   type        = string
   description = "The root password for the OneFS cluster"
+  default     = null
 }
 
 variable "admin_password" {
   sensitive   = true
   type        = string
   description = "The admin password for the OneFS cluster"
+  default     = null
 }
 
 variable "image_id" {

@@ -49,7 +49,7 @@ The module takes the following input parameters:
 
 * `region`: The region to be used to create the resources of the PowerScale Cluster. The default value is `us-east-1` or North Virginia.
 
-* `iam_instance_profile`: The [IAM Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_tags_instance-profiles.html) to be attached to the OneFS nodes in the PowerScale Cluster.
+* `iam_instance_profile`: The [IAM Instance Profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_tags_instance-profiles.html) name to be attached to the OneFS nodes in the PowerScale Cluster.
 
 * `network_id`: The VPC ID to be used to create the resources of the PowerScale Cluster.
 
@@ -83,11 +83,15 @@ The module takes the following input parameters:
 
 * `first_mgmt_node_hostnum`: The host number of the first management node. Only applicable when contiguous_ips is `true`. The default value is `5`.
 
-* `credentials_hashed`: A boolean flag to indicate whether the credentials are hashed or in plain text.
+* `credentials_hashed`: A boolean flag to indicate whether the credentials are hashed or in plain text. The default value is `true`, indicating that the password is hashed.
 
-* `root_password`: The root user's password
+* `root_password`: The root user's password. Applicable when `credentials_hashed` is set as `false`.
 
-* `admin_password`: The admin user's password
+* `admin_password`: The admin user's password. Applicable when `credentials_hashed` is set as `false`.
+
+* `hashed_root_passphrase`: The root user's hashed password. Applicable when `credentials_hashed` is set as `true`.
+
+* `hashed_admin_passphrase`: The admin user's hashed password. Applicable when `credentials_hashed` is set as `true`.
 
 * `image_id`: The AMI ID of the respective build flavour(`release`/`debug`) for the given OneFS build number. 
 
@@ -99,27 +103,37 @@ The module takes the following input parameters:
 
 * `resource_tags`: The tags to be attached to the AWS resources. The tags can be a key-value pair. The allowed values of the value in the key-value pair can be found [here](https://developer.hashicorp.com/terraform/language/expressions/types#types).
 
-* `instance_type`: The type of the instance to be used for the OneFS nodes in the PowerScale cluster. For more details on the allowed values for the instance type [click here](https://aws.amazon.com/ec2/instance-types/). The default value is `m5d.large`.
+* `instance_type`: The type of the instance to be used for the OneFS nodes in the PowerScale cluster. For more details on the allowed values for the instance type [click here](https://infohub.delltechnologies.com/l/apex-file-storage-for-aws-deployment-guide/supported-cluster-configuration-6/). The default value is `m5dn.8xlarge`.
 
-* `os_disk_type`: The type of the root EBS volume to be attached to each OneFS node in the PowerScale Cluster. The default value is `gp3`. The allowed values for this parameter can be found [here](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ebs_volume#type)
+* `os_disk_type`: The type of the root EBS volume to be attached to each OneFS node in the PowerScale Cluster. The default value is `gp3`. The only allowed value is `gp3`
 
-* `data_disk_type`: The type of the secondary EBS volume(s). The default value is `gp3`. The allowed values for this parameter can be found [here](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ebs_volume#type)
+* `data_disk_type`: The type of the secondary EBS volume(s). The default value is `gp3`. The allowed values for this parameter can be found [here](https://infohub.delltechnologies.com/l/apex-file-storage-for-aws-deployment-guide/supported-cluster-configuration-6/)
   
-* `data_disk_size`: Size of the secondary EBS voulme(s) attached to each OneFS node in the PowerScale Cluster. The default value is 16 GiB.
+* `data_disk_size`: Size of the secondary EBS voulme(s) attached to each OneFS node in the PowerScale Cluster. The allowed values for this parameter can be found [here](https://infohub.delltechnologies.com/l/apex-file-storage-for-aws-deployment-guide/supported-cluster-configuration-6/)
 
 * `data_disks_per_node`: Number of the secondary EBS voulme(s) to be attached to each OneFS node in the PowerScale Cluster.
 
-* `data_disk_iops`: IOPS value of the secondary EBS volume(s) attached to the OneFS nodes in the PowerScale Cluster. 
+* `data_disk_iops`: IOPS value of the secondary EBS volume(s) attached to the OneFS nodes in the PowerScale Cluster. Applicable when `data_disk_type` is set as `gp3`.
 
-* `data_disk_throughput`: Throughput value of the secondary EBS volume(s) attached to the OneFS nodes in the PowerScale Cluster. 
-
-* `validate_volume_type`: A boolean flag to indicate whether to validate the input to the parameter `data_disk_type`. If set to true, the allowed value for `data_disk_type` is `gp3`.
+* `data_disk_throughput`: Throughput value of the secondary EBS volume(s) attached to the OneFS nodes in the PowerScale Cluster. Applicable when `data_disk_type` is set as `gp3`.
 
 * `placement_group_strategy`: The placement strategy for aws placement group. The default value to be used is `spread`. To check the allowed values for this parameter [click here](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/placement_group#strategy)
 
 > **NOTE:** Currently, Dell supports only the `spread` placement group strategy. It is strongly recommended to not change the value here.
 
-* `partition_count`: The number of partitions to create in the placement group. Can only be specified when the placement_group_strategy is set to `partition`. Valid values are `1 - 7`
+* `validate_volume_type`: A boolean flag to indicate whether to validate the input to the parameter `data_disk_type`.
+
+* `validate_data_disk_size`: A boolean flag to indicate whether to validate the input to the parameter `data_disk_size`.
+
+* `validate_data_disks_count`: A boolean flag to indicate whether to validate the input to the parameter `data_disks_per_node`.
+
+* `validate_instance_type`: A boolean flag to indicate whether to validate the input to the parameter `instance_type`.
+
+* `validate_os_disk_type`: A boolean flag to indicate whether to validate the input to the parameter `os_disk_type`.
+
+* `validate_nodes_count`: A boolean flag to indicate whether to validate the input to the parameter `nodes`.
+
+* `validate_placement_group_strategy`: A boolean flag to indicate whether to validate the input to the parameter `placement_group_strategy`.
 
 You can find the parameters in [variables.tf](../variables.tf).
 
