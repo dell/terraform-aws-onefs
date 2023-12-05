@@ -327,7 +327,7 @@ Total: 3
 Before adding the instances, first add its external interface's private ip address to the groupnet0.subnet0.pool0 network pool as identified [above](#get-details-of-deployed-onefs-module)
 
 ```shell
-isi network pools modify groupnet0.subnet0.pool0 --add-ranges <instance external ip>-<instance external ip>
+isi network pools modify groupnet0.subnet0.pool0 --add-ranges <instance external ip>-<instance external ip> --force
 ```
 
 Repeat the above command for each of the external ip address noted [above](#get-details-of-deployed-onefs-module)
