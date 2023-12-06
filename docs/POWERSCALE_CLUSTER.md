@@ -149,3 +149,9 @@ By default, the terraform module is configured to use the [local](https://develo
 In order to use any of the other available state persistence options provided by terraform, you need to add a [backend block](https://developer.hashicorp.com/terraform/language/settings/backends/configuration#using-a-backend-block) to the respective module's main.tf with the details of the respective backend configuration that you would like to use.
 > **NOTE**: It's strongly recommended that if you are changing the backend configuration, update that in the terraform configuration file from where you are calling this module.
 For more information on the available backend store options provided by terraform [click here](https://developer.hashicorp.com/terraform/language/settings/backends/configuration#available-backends).
+
+## Terraform Errors
+
+If an error appears during the terraform apply stage, one of the below actions can be taken
+* `terraform apply` : Run the `terraform apply` command to retry
+* `terraform destroy` : To destroy all resources created from the `terraform apply` command
